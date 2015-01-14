@@ -122,6 +122,8 @@ void display(void)
             if (input_str[i+1] == 0)
             {
                 drawModel::plain_side((i-(i/9)*3)%3-1, i/9-1, (i-(i/9)*3)%3, i/9, i%3);  // i%3 (i-(i//9)*3)%3 i%9
+            // new commit
+                
             }
         }
     }
