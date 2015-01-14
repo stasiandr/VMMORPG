@@ -14,10 +14,10 @@
 
 class drawModel {
 public:
-    void cube(float, float, float);
-    void plain_top (float, float, float, float, float);
+    static void cube(float, float, float);
+    static void plain_top (float, float, float, float, float);
     static void plain_side (float, float, float, float, float);
-    void plain_front (float, float, float, float, float);
+    static void plain_front (float, float, float, float, float);
 
 };
 
@@ -71,7 +71,7 @@ void drawModel::plain_top (float x1, float z1, float x2, float z2, float y)
     glVertex3f(x2, y, z2);
 }
 
-static void drawModel::plain_side (float y1, float z1, float y2, float z2, float x)
+ void drawModel::plain_side (float y1, float z1, float y2, float z2, float x)
 {
     glVertex3f(x, y1, z1);
     glVertex3f(x, y1, z2);
