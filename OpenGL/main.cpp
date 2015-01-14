@@ -116,12 +116,12 @@ void display(void)
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
-<<<<<<< HEAD
+
     drawModel::cube(1.0, 1.0, 1.0); // i%3 (i-(i//9)*3)%3 i%9
     drawModel::cube(5.0, 1.0, 1.0); // i%3 (i-(i//9)*3)%3 i%9
     drawModel::cube(1.0, 5.0, 1.0); // i%3 (i-(i//9)*3)%3 i%9
 
-=======
+
     for (int i = 0; i < 27; i++)
     {
         if (input_str[i] != 0)
@@ -134,7 +134,6 @@ void display(void)
             }
         }
     }
->>>>>>> FETCH_HEAD
     
     glEnd();
     
