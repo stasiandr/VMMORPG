@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <GLUT/glut.h>
 #include <OpenGL/glu.h>
 #include <math.h>
@@ -110,30 +111,38 @@ void display(void)
     
     //---
     
-    std::string input_str = "110111111111111111111111111";
+    ifstream in;
+    in.open("chunck.txt");
 
-    
+    string is;
+    in >> is;
+    in.close();
+
+    int wid = 16;
+    int hei = 256;
+    int dee = 16;
+
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
-
-    drawModel::cube(1.0, 1.0, 1.0); // i%3 (i-(i//9)*3)%3 i%9
-    drawModel::cube(5.0, 1.0, 1.0); // i%3 (i-(i//9)*3)%3 i%9
-    drawModel::cube(1.0, 5.0, 1.0); // i%3 (i-(i//9)*3)%3 i%9
-
-
-    for (int i = 0; i < 27; i++)
-    {
-        if (input_str[i] != 0)
-        {
-            if (input_str[i+1] == 0)
-            {
-                drawModel::plain_side((i-(i/9)*3)%3-1, i/9-1, (i-(i/9)*3)%3, i/9, i%3);  // i%3 (i-(i//9)*3)%3 i%9
-            // new commit
-                
-            }
-        }
-    }
+    for (int i = 0; i < wid; i++)
+        for (int j = 0; j < hei; j++)
+            for (int k = 0; k < dee; k++)
+                if (is[i*hei*dee + j*dee + k] == '1')
+                {
+                    if (is[(i-1)*hei*dee + j*dee + z] == '0')
+                        drawModel::plain_side(j, k, j+1, k+1, i);
+                    if (is[(i+1)*hei*dee + j*dee + z] == '0')
+                        drawModel::plain_side(j, k, j+1, k+1, i+1);
+                    if (is[i*hei*dee + (j-1)*dee + z])
+                        drawModel::plain_top(i, k, i+1, k+1, j);
+                    if (is[i*hei*dee + (j+1)*dee + z])
+                        drawModel::plain_top(i, k, i+1, k+1, j+1);
+                    if (is[i*hei*dee + j*dee + (z-1)])
+                        drawModel::plain_front(i, j, i+1, j+1, k);
+                    if (is[i*hei*dee + j*dee + (z+1)])
+                        drawModel::plain_front(i, j, i+1, j+1, k+1);
+                }
     
     glEnd();
     
@@ -143,14 +152,14 @@ void display(void)
     glBegin(GL_LINES);
     glColor3f(1, 1, 1);
     
-    glVertex3f(-10, 0, 0);
+    glVertex3f(-1000, 0, 0);
     glVertex3f(1000, 0, 0);
     
-    glVertex3f(0, -100, 0);
-    glVertex3f(0, 100, 0);
+    glVertex3f(0, -1000, 0);
+    glVertex3f(0, 1000, 0);
     
-    glVertex3f(0, 0, -100);
-    glVertex3f(0, 0, 100);
+    glVertex3f(0, 0, -1000);
+    glVertex3f(0, 0, 1000);
     
     glEnd();
     
