@@ -14,6 +14,8 @@
 #include "free_camera.h"
 #include "models.h"
 
+using namespace std;
+
 void display(void);
 void reshape(int, int);
 
