@@ -8,8 +8,10 @@
 
 #include <iostream>
 #include <fstream>
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
+#include <windows.h>
+#include <GLUT\glut.h>
+#include <OpenGl\glu.h>
+#include <OpenGl\gl.h>
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
