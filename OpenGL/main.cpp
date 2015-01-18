@@ -21,9 +21,9 @@ using namespace std;
 void display(void);
 void reshape(int, int);
 
-bool good(i, size)
+bool good(int i, int siz)
 {
-    return (i < size)&&(i >= 0)
+    return (i < siz)&&(i >= 0);
 }
 
 GLfloat rtri;
