@@ -21,6 +21,11 @@ using namespace std;
 void display(void);
 void reshape(int, int);
 
+bool good(i, size)
+{
+    return (i < size)&&(i >= 0)
+}
+
 GLfloat rtri;
 float vel = 0.0f;
 
@@ -134,17 +139,17 @@ void display(void)
             for (int k = 0; k < dee; k++)
                 if (is[i*hei*dee + j*dee + k] == '1')
                 {
-                    if (is[(i-1)*hei*dee + j*dee + z] == '0')
+                    if (good((i-1)*hei*dee + j*dee + z, is.size()) && is[(i-1)*hei*dee + j*dee + z] == '0')
                         drawModel::plain_side(j, k, j+1, k+1, i);
-                    if (is[(i+1)*hei*dee + j*dee + z] == '0')
+                    if (good((i+1)*hei*dee + j*dee + z, is.size()) && is[(i+1)*hei*dee + j*dee + z] == '0')
                         drawModel::plain_side(j, k, j+1, k+1, i+1);
-                    if (is[i*hei*dee + (j-1)*dee + z])
+                    if (good(i*hei*dee + (j-1)*dee + z, is.size()) && is[i*hei*dee + (j-1)*dee + z] == '0')
                         drawModel::plain_top(i, k, i+1, k+1, j);
-                    if (is[i*hei*dee + (j+1)*dee + z])
+                    if (good(i*hei*dee + (j+1)*dee + z, is.size()) && is[i*hei*dee + (j+1)*dee + z] == '0')
                         drawModel::plain_top(i, k, i+1, k+1, j+1);
-                    if (is[i*hei*dee + j*dee + (z-1)])
+                    if (good(i*hei*dee + j*dee + (z-1), is.size()) && is[i*hei*dee + j*dee + (z-1)] == '0')
                         drawModel::plain_front(i, j, i+1, j+1, k);
-                    if (is[i*hei*dee + j*dee + (z+1)])
+                    if (good(i*hei*dee + j*dee + (z+1), is.size()) && is[i*hei*dee + j*dee + (z+1)] == '0')
                         drawModel::plain_front(i, j, i+1, j+1, k+1);
                 }
     
