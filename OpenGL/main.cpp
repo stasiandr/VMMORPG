@@ -8,10 +8,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <windows.h>
-#include <GLUT\glut.h>
-#include <OpenGl\glu.h>
-#include <OpenGl\gl.h>
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
@@ -121,10 +119,11 @@ void display(void)
     //---
     
     ifstream in;
-    in.open("chunck.txt");
+    in.open("/Users/irina/VMMORPG/chunck.txt");
 
     string is;
     in >> is;
+  //  std::cout << is;
     in.close();
 
     int wid = 16;
@@ -134,7 +133,7 @@ void display(void)
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
-    for (int i = 0; i < wid; i++)
+/*    for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
             for (int k = 0; k < dee; k++)
                 if (is[i*hei*dee + j*dee + k] == '1')
@@ -152,6 +151,8 @@ void display(void)
                     if (good(i*hei*dee + j*dee + (z+1), is.size()) && is[i*hei*dee + j*dee + (z+1)] == '0')
                         drawModel::plain_front(i, j, i+1, j+1, k+1);
                 }
+*/
+    drawModel::plain_side(0, 0, 1, 1, 0);
     
     glEnd();
     
