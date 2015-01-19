@@ -19,9 +19,16 @@ using namespace std;
 void display(void);
 void reshape(int, int);
 
-bool good(int i, int siz)
+int wid = 16;
+int hei = 256;
+int dee = 16;
+
+bool good(int i, int j, int k, int siz)
 {
-    return (i < siz)&&(i >= 0);
+    if (i >= 0 && j >= 0 && k >= 0)
+        if (i*hei*dee + j*dee + z < siz)
+            return true;
+    return false;
 }
 
 GLfloat rtri;
@@ -125,11 +132,7 @@ void display(void)
     in >> is;
   //  std::cout << is;
     in.close();
-
-    int wid = 16;
-    int hei = 256;
-    int dee = 16;
-
+    
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
@@ -138,18 +141,15 @@ void display(void)
             for (int k = 0; k < dee; k++)
                 if (is[i*hei*dee + j*dee + k] == '1')
                 {
-                    if (!(good((i-1)*hei*dee + j*dee + z, is.size())) || is[(i-1)*hei*dee + j*dee + z] == '0')
+                    /*
+                    if (!(good((i-1)*hei*dee, j*dee, z, is.size())) || is[(i-1)*hei*dee + j*dee + z] == '0')
                         drawModel::plain_side(j, k, j+1, k+1, i);
-                    if (!(good((i+1)*hei*dee + j*dee + z, is.size())) || is[(i+1)*hei*dee + j*dee + z] == '0')
-                        drawModel::plain_side_reversed(j, k, j+1, k+1, i+1);
-                    if (!(good(i*hei*dee + (j-1)*dee + z, is.size())) || is[i*hei*dee + (j-1)*dee + z] == '0')
+                    if (!(good((i+1)*hei*dee, j*dee, z, is.size())) || is[(i+1)*hei*dee + j*dee + z] == '0')
+                        drawModel::plain_side_reversed(j, k, j+1, k+1, i+1);*/
+                    if (!(good(i*hei*dee, (j-1)*dee, z, is.size())))
+                        drawModel::plain_top_reversed(i, k, i+1, k+1, j);
+                    if (!(good(i*hei*dee, (j+1)*dee, z, is.size())))
                         drawModel::plain_top(i, k, i+1, k+1, j);
-                    if (!(good(i*hei*dee + (j+1)*dee + z, is.size())) || is[i*hei*dee + (j+1)*dee + z] == '0')
-                        drawModel::plain_top_reversed(i, k, i+1, k+1, j+1);
-                    if (!(good(i*hei*dee + j*dee + (z-1), is.size())) || is[i*hei*dee + j*dee + (z-1)] == '0')
-                        drawModel::plain_front(i, j, i+1, j+1, k);
-                    if (!(good(i*hei*dee + j*dee + (z+1), is.size())) || is[i*hei*dee + j*dee + (z+1)] == '0')
-                        drawModel::plain_front_reversed(i, j, i+1, j+1, k+1);
                 }
 
     drawModel::plain_side(0, 0, 1, 1, 0);
