@@ -92,24 +92,24 @@ void drawModel::plain_front (float x1, float y1, float x2, float y2, float z)
 
 void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y)
 {
-    glVertex3f(x1, y, z1);
-    glVertex3f(x1, y, z2);
-    glVertex3f(x2, y, z2);
     glVertex3f(x2, y, z1);
+    glVertex3f(x2, y, z2);
+    glVertex3f(x1, y, z2);
+    glVertex3f(x1, y, z1);
 }
 
 void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x)
 {
-    glVertex3f(x, y1, z1);
-    glVertex3f(x, y1, z2);
-    glVertex3f(x, y2, z2);
     glVertex3f(x, y2, z1);
+    glVertex3f(x, y2, z2);
+    glVertex3f(x, y1, z2);
+    glVertex3f(x, y1, z1);
 }
 void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z)
 {
-    glVertex3f(x1, y1, z);
-    glVertex3f(x1, y2, z);
-    glVertex3f(x2, y2, z);
     glVertex3f(x2, y1, z);
+    glVertex3f(x2, y2, z);
+    glVertex3f(x1, y2, z);
+    glVertex3f(x1, y1, z);
 }
 
