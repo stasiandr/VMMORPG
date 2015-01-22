@@ -126,7 +126,7 @@ void display(void)
     //---
 
     ifstream in;
-    in.open("chunck.txt");
+    in.open("/Users/irina/VMMORPG/chunck.txt");
 
     string is;
     in >> is;
