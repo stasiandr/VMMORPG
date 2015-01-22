@@ -30,6 +30,7 @@
 		8C412DBA1A23C92400C4283B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		8C412DBC1A23CCD600C4283B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		8C6852361A2899E4007A11D8 /* map.vmmomap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = map.vmmomap; path = ../map.vmmomap; sourceTree = "<group>"; };
+		8C698D351A71563F009FAD5D /* client_connect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = client_connect.h; sourceTree = "<group>"; };
 		8C8F49B21A29BB1400FA6794 /* free_camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = free_camera.h; sourceTree = "<group>"; };
 		8C8F49B31A29BBBF00FA6794 /* models.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = models.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,6 +73,7 @@
 				8C412DB31A23C8E600C4283B /* main.cpp */,
 				8C8F49B21A29BB1400FA6794 /* free_camera.h */,
 				8C8F49B31A29BBBF00FA6794 /* models.h */,
+				8C698D351A71563F009FAD5D /* client_connect.h */,
 			);
 			path = OpenGL;
 			sourceTree = "<group>";

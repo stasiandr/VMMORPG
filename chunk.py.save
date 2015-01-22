@@ -1,0 +1,6 @@
+f = open("chunk.txt", "w+")
+for i in range(16):
+	for j in range(16*16-1):
+		f.write('0')
+	f.write('1')
+f.close()

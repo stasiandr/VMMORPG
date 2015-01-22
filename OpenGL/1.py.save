@@ -1,0 +1,7 @@
+f = open("chunk.VMC", "w+")
+for i in range(16*16*16):
+	if i%256 == 0:
+		f.write('1')
+	else:
+		f.write('0')
+f.close()

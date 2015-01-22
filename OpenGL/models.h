@@ -15,12 +15,12 @@
 class drawModel {
 public:
     static void cube(float, float, float);
-    static void plain_top (float, float, float, float, float);
-    static void plain_side (float, float, float, float, float);
-    static void plain_front (float, float, float, float, float);
-    static void plain_top_reversed (float, float, float, float, float);
-    static void plain_side_reversed (float, float, float, float, float);
-    static void plain_front_reversed (float, float, float, float, float);
+    static void plain_top (float, float, float, float, float, float, float, float);
+    static void plain_side (float, float, float, float, float, float, float, float);
+    static void plain_front (float, float, float, float, float, float, float, float);
+    static void plain_top_reversed (float, float, float, float, float, float, float, float);
+    static void plain_side_reversed (float, float, float, float, float, float, float, float);
+    static void plain_front_reversed (float, float, float, float, float, float, float, float);
 
 };
 
@@ -66,23 +66,26 @@ void drawModel::cube(float pos_x, float pos_y, float pos_z)
 }
 
 
-void drawModel::plain_top (float x1, float z1, float x2, float z2, float y)
+void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
+    glColor3f(c1, c2, c3);
     glVertex3f(x1, y, z1);
     glVertex3f(x1, y, z2);
     glVertex3f(x2, y, z2);
     glVertex3f(x2, y, z1);
 }
 
- void drawModel::plain_side (float y1, float z1, float y2, float z2, float x)
+ void drawModel::plain_side (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
+    glColor3f(c1, c2, c3);
     glVertex3f(x, y1, z1);
     glVertex3f(x, y1, z2);
     glVertex3f(x, y2, z2);
     glVertex3f(x, y2, z1);
 }
-void drawModel::plain_front (float x1, float y1, float x2, float y2, float z)
+void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 =1.0f, float c3 = 1.0f)
 {
+    glColor3f(c1, c2, c3);
     glVertex3f(x1, y1, z);
     glVertex3f(x1, y2, z);
     glVertex3f(x2, y2, z);
@@ -90,23 +93,26 @@ void drawModel::plain_front (float x1, float y1, float x2, float y2, float z)
 }
 
 
-void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y)
+void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
+    glColor3f(c1, c2, c3);
     glVertex3f(x2, y, z1);
     glVertex3f(x2, y, z2);
     glVertex3f(x1, y, z2);
     glVertex3f(x1, y, z1);
 }
 
-void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x)
+void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
+    glColor3f(c1, c2, c3);
     glVertex3f(x, y2, z1);
     glVertex3f(x, y2, z2);
     glVertex3f(x, y1, z2);
     glVertex3f(x, y1, z1);
 }
-void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z)
+void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
+    glColor3f(c1, c2, c3);
     glVertex3f(x2, y1, z);
     glVertex3f(x2, y2, z);
     glVertex3f(x1, y2, z);
