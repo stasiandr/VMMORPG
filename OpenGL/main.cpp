@@ -8,8 +8,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
+#include <windows.h>
+#include "glut.h"
+#include "glu.h"
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
@@ -23,11 +24,14 @@ int wid = 25;
 int hei = 25;
 int dee = 25;
 
-bool bad(int i, int j, int k, int siz)
+bool bad(int i, int j, int k)
 {
     if (i >= 0 && j >= 0 && k >= 0)
-        if (i*hei*dee + j*dee + z < siz)
+        if (i < wid || j < hei || k < dee)
+        {
+            cout << endl << (i < wid) << (j < hei) << (k < dee) << endl;
             return false;
+        }
     return true;
 }
 
@@ -126,13 +130,13 @@ void display(void)
     //---
 
     ifstream in;
-    in.open("/Users/irina/VMMORPG/chunck.txt");
+    in.open("chunck.txt");
 
     string is;
     in >> is;
     in.close();
 
-    cout << "AAA ! " << bad(24, 23, 17, is.size()) << endl;
+    cout << bad(10, 25, 10);
 
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
@@ -142,15 +146,16 @@ void display(void)
             for (int k = 0; k < dee; k++)
                 if (is[i*hei*dee + j*dee + k] == '1')
                 {/*
-                    if (bad(i-1, j, k, is.size()))
+                    if (bad(i-1, j, k))
                         drawModel::plain_side(j, k, j+1, k+1, i);
-                    if (bad(i+1, j, k, is.size()))
+                    if (bad(i+1, j, k))
                         drawModel::plain_side_reversed(j, k, j+1, k+1, i); // Тут маленький баг!!!*/
-                    if (bad(i, j-1, k, is.size()))
-                    {
+                    if (bad(i, j-1, k))
                         drawModel::plain_top_reversed(i, k, i+1, k+1, j);
-                        if (j != 0)
-                            cout << i << ' ' << j << ' ' << k << endl;
+                    if (bad(i, j+1, k))
+                    {
+                        drawModel::plain_top(i, k, i+1, k+1, j);
+                        cout << i << ' ' << j << ' ' << k << endl;
                     }
                 }
 
