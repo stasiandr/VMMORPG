@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <fstream>
+//#include <windows.h>
 #include <GLUT/glut.h>
 #include <OpenGL/glu.h>
 #include <math.h>
@@ -18,9 +19,11 @@ using namespace std;
 
 void display(void);
 void reshape(int, int);
+/* Drawing one chunk function*/
+void chunks(const char *);
 
 int wid = 16;
-int hei = 16;
+int hei = 256;
 int dee = 16;
 
 bool bad(int i, int j, int k)
@@ -40,6 +43,7 @@ float vel = 0.0f;
 void display(void);
 /*! GLUT window reshape callback function */
 void reshape(int, int);
+
 
 int main(int argc, char** argv)
 {
@@ -126,52 +130,29 @@ void display(void)
               0.0f, 1.0f,  0.0f);
 
     //---
+    const char * fns[16];
+    fns[0] = "00.VMC";
+    fns[1] = "01.VMC";
+    fns[2] = "02.VMC";
+    fns[3] = "03.VMC";
 
-    
-    ifstream in;
-    in.open("/Users/irina/VMMORPG/chunk.VMC");
+    fns[4] = "10.VMC";
+    fns[5] = "11.VMC";
+    fns[6] = "12.VMC";
+    fns[7] = "13.VMC";
 
-    string is;
-    in >> is;
-    in.close();
-    
-    glPushMatrix();
-    glRotatef(rtri, 1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < wid; i++)
-        for (int j = 0; j < hei; j++)
-            for (int k = 0; k < dee; k++)
-                if (is[i*hei*dee + j*dee + k] == '1')
-                {
-                    //chunk's borders drawing - BEGIN
-                    /*if (bad(i-1, j, k))
-                        drawModel::plain_side(j, k, j+1, k+1, i, 1.0f, 0.0f, 0.0f);
-                    if (bad(i+1, j, k))
-                        drawModel::plain_side_reversed(j, k, j+1, k+1, i+1, 1.0f, 0.0f, 1.0f);
-                    if (bad(i, j-1, k))
-                        drawModel::plain_top_reversed(i, k, i+1, k+1, j);
-                    if (bad(i, j+1, k))
-                        drawModel::plain_top(i, k, i+1, k+1, j+1, 0.0f, 1.0f, 0.0f);
-                    if (bad(i, j, k-1))
-                        drawModel::plain_front(i, j, i+1, j+1, k, 0.0f, 1.0f, 1.0f);
-                    if (bad(i, j, k+1))
-                        drawModel::plain_front_reversed(i, j, i+1, j+1, k+1, 0.0f, 0.0f, 1.0f);*/
-                    // chunk's borders drawing - END
-                    if (is[(i-1)*hei*dee + j*dee + k] == '0')
-                        drawModel::plain_side(j, k, j+1, k+1, i, 1.0f, 0.0f, 0.0f);
-                    if (is[(i+1)*hei*dee + j*dee + k] == '0')
-                        drawModel::plain_side_reversed(j, k, j+1, k+1, i+1, 1.0f, 0.0f, 1.0f);
-                    if (is[i*hei*dee + (j-1)*dee + k] == '0')
-                        drawModel::plain_top_reversed(i, k, i+1, k+1, j, 1.0f, 1.0f, 0.0f);
-                    if (is[i*hei*dee + (j+1)*dee + k] == '0')
-                        drawModel::plain_top(i, k, i+1, k+1, j+1, 0.0f, 1.0f, 0.0f);
-                    if (is[i*hei*dee + j*dee + k-1] == '0')
-                        drawModel::plain_front(i, j, i+1, j+1, k, 0.0f, 1.0f, 1.0f);
-                    if (is[i*hei*dee + j*dee + k+1] == '0')
-                        drawModel::plain_front_reversed(i, j, i+1, j+1, k+1, 0.0f, 0.0f, 1.0f);
-                }
+    fns[8] = "20.VMC";
+    fns[9] = "21.VMC";
+    fns[10] = "22.VMC";
+    fns[11] = "23.VMC";
 
-    glEnd();
+    fns[12] = "30.VMC";
+    fns[13] = "31.VMC";
+    fns[14] = "32.VMC";
+    fns[15] = "33.VMC";
+
+    for(int i = 0; i < 16; ++i)
+        chunks(fns[i]);
 
     glPopMatrix();
 
@@ -202,8 +183,76 @@ void display(void)
     glutPostRedisplay();
 }
 
+int powm(int n, int m)
+{
+    int r = 1;
+    for (int i = 0; i < m; ++i)
+        r *= n;
+    return r;
+}
 
+void chunks(const char *filename)
+{
+    ifstream in;
+    in.open("/Users/irina/VMMORPG/"+filename);
 
+    string is;
+    in >> is;
+    in.close();
+
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int de = 12;
+
+    for (int i = 0; i < 12; ++i)
+    {
+        if (i < 4)
+            x += (((int)is[i] - 48) * powm(10, 3-(i%4)));
+        else if (i < 8)
+            y += (((int)is[i] - 48) * powm(10, 3-(i%4)));
+        else if (i < 12)
+            z += (((int)is[i] - 48) * powm(10, 3-(i%4)));
+    }
+
+    glPushMatrix();
+    glRotatef(rtri, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < wid; i++)
+        for (int j = 0; j < hei; j++)
+            for (int k = 0; k < dee; k++)
+                if (is[i*hei*dee + j*dee + k + de] == '1')
+                {
+                    //chunk's borders drawing - BEGIN
+                    if (bad(i-1, j, k))
+                        drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
+                    if (bad(i+1, j, k))
+                        drawModel::plain_side_reversed(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid+1, 1.0f, 0.0f, 1.0f);
+                    if (bad(i, j-1, k))
+                        drawModel::plain_top_reversed(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei, 1.0f, 1.0f, 0.0f);
+                    if (bad(i, j+1, k))
+                        drawModel::plain_top(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei+1, 0.0f, 1.0f, 0.0f);
+                    if (bad(i, j, k-1))
+                        drawModel::plain_front(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee, 0.0f, 1.0f, 1.0f);
+                    if (bad(i, j, k+1))
+                        drawModel::plain_front_reversed(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee+1, 0.0f, 0.0f, 1.0f);
+                    // chunk's borders drawing - END
+                    if (is[(i-1)*wid*dee + j*dee + k + de] == '0')
+                        drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
+                    if (is[(i+1)*wid*dee + j*dee + k + de] == '0')
+                        drawModel::plain_side_reversed(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid+1, 1.0f, 0.0f, 1.0f);
+                    if (is[i*wid*dee + (j-1)*dee + k + de] == '0')
+                        drawModel::plain_top_reversed(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei, 1.0f, 1.0f, 0.0f);
+                    if (is[i*wid*dee + (j+1)*dee + k + de] == '0')
+                        drawModel::plain_top(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei+1, 0.0f, 1.0f, 0.0f);
+                    if (is[i*wid*dee + j*dee + k-1 + de] == '0')
+                        drawModel::plain_front(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee, 0.0f, 1.0f, 1.0f);
+                    if (is[i*wid*dee + j*dee + k+1 + de] == '0')
+                        drawModel::plain_front_reversed(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee+1, 0.0f, 0.0f, 1.0f);
+                }
+
+    glEnd();
+}
 
 /*! glut reshape callback function.  GLUT calls this function whenever
  the window is resized, including the first time it is created.
