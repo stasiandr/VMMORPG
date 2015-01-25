@@ -20,7 +20,9 @@ using namespace std;
 void display(void);
 void reshape(int, int);
 /* Drawing one chunk function*/
-void chunks(const char *);
+void chunks(string);
+/*Getting one chunk-string function*/
+string getchunk(const char *);
 
 int wid = 16;
 int hei = 256;
@@ -44,13 +46,42 @@ void display(void);
 /*! GLUT window reshape callback function */
 void reshape(int, int);
 
+const char * fns[16];
+string iss[16];
 
+void Update()
+{
+    for(int i = 0; i < 16; ++i)
+        iss[i] = getchunk(fns[i]);
+}
 int main(int argc, char** argv)
 {
+    fns[0] = "00.VMC";
+    fns[1] = "01.VMC";
+    fns[2] = "02.VMC";
+    fns[3] = "03.VMC";
+
+    fns[4] = "10.VMC";
+    fns[5] = "11.VMC";
+    fns[6] = "12.VMC";
+    fns[7] = "13.VMC";
+
+    fns[8] = "20.VMC";
+    fns[9] = "21.VMC";
+    fns[10] = "22.VMC";
+    fns[11] = "23.VMC";
+
+    fns[12] = "30.VMC";
+    fns[13] = "31.VMC";
+    fns[14] = "32.VMC";
+    fns[15] = "33.VMC";
+    
+    Update();
+    
     glutInit(&argc, argv);
 
     /* set the window size to 512 x 512 */
-    glutInitWindowSize(1024, 630);
+    glutInitWindowSize(1300, 690);
 
     /* set the display mode to Red, Green, Blue and Alpha
      allocate a depth buffer
@@ -130,29 +161,9 @@ void display(void)
               0.0f, 1.0f,  0.0f);
 
     //---
-    const char * fns[16];
-    fns[0] = "00.VMC";
-    fns[1] = "01.VMC";
-    fns[2] = "02.VMC";
-    fns[3] = "03.VMC";
-
-    fns[4] = "10.VMC";
-    fns[5] = "11.VMC";
-    fns[6] = "12.VMC";
-    fns[7] = "13.VMC";
-
-    fns[8] = "20.VMC";
-    fns[9] = "21.VMC";
-    fns[10] = "22.VMC";
-    fns[11] = "23.VMC";
-
-    fns[12] = "30.VMC";
-    fns[13] = "31.VMC";
-    fns[14] = "32.VMC";
-    fns[15] = "33.VMC";
 
     for(int i = 0; i < 16; ++i)
-        chunks(fns[i]);
+        chunks(iss[i]);
 
     glPopMatrix();
 
@@ -191,15 +202,8 @@ int powm(int n, int m)
     return r;
 }
 
-void chunks(const char *filename)
+void chunks(string is)
 {
-    ifstream in;
-    in.open("/Users/irina/VMMORPG/"+filename);
-
-    string is;
-    in >> is;
-    in.close();
-
     int x = 0;
     int y = 0;
     int z = 0;
@@ -252,6 +256,16 @@ void chunks(const char *filename)
                 }
 
     glEnd();
+}
+string getchunk(const char *fn)
+{
+    ifstream in;
+    in.open("/Users/irina/VMMORPG/" + fn);
+
+    string is;
+    in >> is;
+    in.close();
+    return is;
 }
 
 /*! glut reshape callback function.  GLUT calls this function whenever
