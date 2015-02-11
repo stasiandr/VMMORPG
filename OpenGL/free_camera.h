@@ -14,6 +14,8 @@
 
 // Camer Stuff --------
 
+float Moveconst = 1.0f;
+
 float angle = 0.0f;
 float Yangle = 0.0f;
 
@@ -48,32 +50,38 @@ void releaseKey(int, int, int);
 void mouseMove(int, int);
 void mouseButton(int, int, int, int);
 
-
-void computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y) {
+float m[3];
+float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
+{
     x += deltaMove_Sides * Slx * 0.1f;
     z += deltaMove_Sides * Slz * 0.1f;
-    
+
     x += deltaMove * lx * 0.1f;
     z += deltaMove * lz * 0.1f;
     y += deltaMove * ly * 0.1f;
-    
+
     y += deltaMove_Y * 0.1f;
+
+    m[0] = x;
+    m[1] = y;
+    m[2] = z;
+    return m;
 }
 
 void processNormalKeys(unsigned char key, int xx, int yy) {
-    
+
     if (key == 27)
         exit(0);
-    
+
     switch (key) {
-        case 'w' : deltaMove = 5.0f; break;
-        case 's' : deltaMove = -5.0f; break;
-        case 'd' : deltaMove_Sides = 5.0f; break;
-        case 'a' : deltaMove_Sides = -5.0f; break;
-        case ' ' : deltaMove_Y = 5.0f;break;
-        case 'z' : deltaMove_Y = -5.0f;break;
+        case 'w' : deltaMove = Moveconst; break;
+        case 's' : deltaMove = -Moveconst; break;
+        case 'd' : deltaMove_Sides = Moveconst; break;
+        case 'a' : deltaMove_Sides = -Moveconst; break;
+        case ' ' : deltaMove_Y = Moveconst;break;
+        case 'z' : deltaMove_Y = -Moveconst;break;
     }
-    
+
 }
 
 void processNormalKeysRelease(unsigned char key, int xx, int yy) {
@@ -85,11 +93,11 @@ void processNormalKeysRelease(unsigned char key, int xx, int yy) {
         case ' ' :
         case 'z' : deltaMove_Y = 0; break;
     }
-    
+
 }
 
 void pressKey(int key, int xx, int yy) {
-    
+
     switch (key) {
         case GLUT_KEY_UP : deltaMove = 5.0f; break;
         case GLUT_KEY_DOWN : deltaMove = -5.0f; break;
@@ -97,7 +105,7 @@ void pressKey(int key, int xx, int yy) {
 }
 
 void releaseKey(int key, int x, int y) {
-    
+
     switch (key) {
         case GLUT_KEY_UP :
         case GLUT_KEY_DOWN : deltaMove = 0;break;
@@ -106,24 +114,24 @@ void releaseKey(int key, int x, int y) {
 
 
 void mouseMove(int x, int y) {
-    
+
     // this will only be true when the left button is down
     if (xOrigin >= 0) {
-        
+
         YdeltaAngle = (y - yOrigin) * -0.01f;
-        
+
         if (sin(Yangle + YdeltaAngle) > -0.6f && sin(Yangle + YdeltaAngle) < 0.6f)
         {
             ly = sin(Yangle + YdeltaAngle);
         }
-        
-        
+
+
         // update deltaAngle
         deltaAngle = (x - xOrigin) * 0.01f;
-        
+
         Slx = cos(angle + deltaAngle);
         Slz = sin(angle + deltaAngle);
-        
+
         // update camera's direction
         lx = sin(angle + deltaAngle);
         lz = -cos(angle + deltaAngle);
@@ -131,15 +139,15 @@ void mouseMove(int x, int y) {
 }
 
 void mouseButton(int button, int state, int x, int y) {
-    
+
     // only start motion if the left button is pressed
     if (button == GLUT_LEFT_BUTTON) {
-        
+
         // when the button is released
         if (state == GLUT_UP) {
             angle += deltaAngle;
             Yangle += YdeltaAngle;
-            
+
             xOrigin = -1;
             yOrigin = -1;
         }
