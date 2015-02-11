@@ -25,7 +25,7 @@ void chunks(string);
 string getchunk(const char *);
 
 int wid = 16;
-int hei = 256;
+int hei = 16;
 int dee = 16;
 
 bool bad(int i, int j, int k)
@@ -37,6 +37,18 @@ bool bad(int i, int j, int k)
         }
     return true;
 }
+int okr(float n)
+{
+    int s = (int)n;
+    if (n >= s and n < s+1)
+        return s;
+    else if (n >= s+1 and n < s+2)
+        return s;
+}
+
+float * posses;
+float st[3];
+bool blocker [6];
 
 GLfloat rtri;
 float vel = 0.0f;
@@ -56,6 +68,11 @@ void Update()
 }
 int main(int argc, char** argv)
 {
+    st[0] = 0.0f;
+    st[1] = 10.0f;
+    st[2] = 0.0f;
+    posses = st;
+
     fns[0] = "00.VMC";
     fns[1] = "01.VMC";
     fns[2] = "02.VMC";
@@ -140,8 +157,6 @@ int main(int argc, char** argv)
  */
 void display(void)
 {
-    if (deltaMove || deltaMove_Sides || deltaMove_Y)
-        computePos(deltaMove, deltaMove_Sides, deltaMove_Y);
 
     /* clear the color buffer (resets everything to black) */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -161,9 +176,22 @@ void display(void)
               0.0f, 1.0f,  0.0f);
 
     //---
+    if (deltaMove || deltaMove_Sides || deltaMove_Y)
+        posses = computePos(deltaMove, deltaMove_Sides, deltaMove_Y);
 
     for(int i = 0; i < 16; ++i)
         chunks(iss[i]);
+
+    deltaMove_Y -= 0.005f;
+    if (blocker[0])
+        if (deltaMove_Y < 0)
+            deltaMove_Y = 0;
+    if (blocker[1])
+        if (deltaMove_Y > 0)
+            deltaMove_Y = 0;
+
+    for(int b = 0; b < 6; ++b)
+       blocker[b] = false;
 
     glPopMatrix();
 
@@ -222,11 +250,18 @@ void chunks(string is)
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
+    int tx = okr(posses[0])-1;
+    int ty = okr(posses[1])-1;
+    int tz = okr(posses[2])-1;
     for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
             for (int k = 0; k < dee; k++)
                 if (is[i*hei*dee + j*dee + k + de] == '1')
                 {
+                    if (j+y*hei == ty && (i+x*wid == tx || i+x*wid == tx+1) && (k+z*dee == tz || k+z*dee == tz+1))
+                        blocker[0] = true;
+                    if (j+y*hei == ty+1 && (i+x*wid == tx || i+x*wid == tx+1) && (k+z*dee == tz || k+z*dee == tz+1))
+                        blocker[1] = true;
                     //chunk's borders drawing - BEGIN
                     if (bad(i-1, j, k))
                         drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
