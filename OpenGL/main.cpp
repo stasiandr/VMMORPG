@@ -8,9 +8,9 @@
 
 #include <iostream>
 #include <fstream>
-//#include <windows.h>
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
+#include <windows.h>
+#include "glut.h"
+#include "glu.h"
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
@@ -92,9 +92,9 @@ int main(int argc, char** argv)
     fns[13] = "31.VMC";
     fns[14] = "32.VMC";
     fns[15] = "33.VMC";
-    
+
     Update();
-    
+
     glutInit(&argc, argv);
 
     /* set the window size to 512 x 512 */
@@ -182,7 +182,7 @@ void display(void)
     for(int i = 0; i < 16; ++i)
         chunks(iss[i]);
 
-    deltaMove_Y -= 0.005f;
+    deltaMove_Y -= 0.01f;
     if (blocker[0])
         if (deltaMove_Y < 0)
             deltaMove_Y = 0;
@@ -246,13 +246,16 @@ void chunks(string is)
         else if (i < 12)
             z += (((int)is[i] - 48) * powm(10, 3-(i%4)));
     }
-
+    //cout << x << ' ' << y << ' ' << z << endl;
+    x = 0;
+    y = 0;
+    z = 0;
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
-    int tx = okr(posses[0])-1;
-    int ty = okr(posses[1])-1;
-    int tz = okr(posses[2])-1;
+    int tx = (int)posses[0];
+    int ty = (int)posses[1]-1;
+    int tz = (int)posses[2];
     for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
             for (int k = 0; k < dee; k++)
@@ -263,8 +266,11 @@ void chunks(string is)
                     if (j+y*hei == ty+1 && (i+x*wid == tx || i+x*wid == tx+1) && (k+z*dee == tz || k+z*dee == tz+1))
                         blocker[1] = true;
                     //chunk's borders drawing - BEGIN
+                    //drawModel::cube(i+x*wid, j+y*hei, k+z*dee);
                     if (bad(i-1, j, k))
+                    {
                         drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
+                    }
                     if (bad(i+1, j, k))
                         drawModel::plain_side_reversed(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid+1, 1.0f, 0.0f, 1.0f);
                     if (bad(i, j-1, k))
@@ -295,7 +301,7 @@ void chunks(string is)
 string getchunk(const char *fn)
 {
     ifstream in;
-    in.open("/Users/irina/VMMORPG/" + fn);
+    in.open(fn);
 
     string is;
     in >> is;
