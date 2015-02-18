@@ -14,7 +14,8 @@
 
 // Camer Stuff --------
 
-float Moveconst = 1.0f;
+float Moveconst = 0.5f;
+float MoveconstY = 1.0f;
 
 float angle = 0.0f;
 float Yangle = 0.0f;
@@ -23,7 +24,7 @@ float Yangle = 0.0f;
 float lx=0.0f,lz=1.0f, ly=0.0f;
 
 // XZ position of the camera
-float x=1.0f, z=10.0f, y=0.0f;
+float x=10.0f, z=10.0f, y=50.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -78,20 +79,18 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
         case 's' : deltaMove = -Moveconst; break;
         case 'd' : deltaMove_Sides = Moveconst; break;
         case 'a' : deltaMove_Sides = -Moveconst; break;
-        case ' ' : deltaMove_Y = Moveconst;break;
-        case 'z' : deltaMove_Y = -Moveconst;break;
+        case ' ' : deltaMove_Y = MoveconstY; break;
     }
 
 }
 
 void processNormalKeysRelease(unsigned char key, int xx, int yy) {
     switch (key) {
-        case 'w' :
-        case 's' : deltaMove = 0; break;
-        case 'd' :
-        case 'a' : deltaMove_Sides = 0; break;
-        case ' ' :
-        case 'z' : deltaMove_Y = 0; break;
+        case 'w' : deltaMove -= Moveconst; break;
+        case 's' : deltaMove -= -Moveconst; break;
+        case 'd' : deltaMove_Sides -= Moveconst; break;
+        case 'a' : deltaMove_Sides -= -Moveconst; break;
+        case ' ' : break;
     }
 
 }
