@@ -54,16 +54,16 @@ void mouseButton(int, int, int, int);
 float m[3];
 float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
 {
-    x += deltaMove_Sides * Slx * 0.1f;
-    z += deltaMove_Sides * Slz * 0.1f;
+    x += deltaMove_Sides * Slx * 0.1f; // Slx = cos(angle + deltaAngle)
+    z += deltaMove_Sides * Slz * 0.1f; // Slz = sin(angle + deltaAngle)
 
-    x += deltaMove * lx * 0.1f;
-    z += deltaMove * lz * 0.1f;
-    y += deltaMove * ly * 0.1f;
+    x += deltaMove * lx * 0.1f; // lx = sin(angle + deltaAngle)
+    z += deltaMove * lz * 0.1f; // lz = -cos(angle + deltaAngle)
+    //!y += deltaMove * ly * 0.1f; // ly = sin(Yangle + YdeltaAngle) Это НЕ НУЖНА!
 
     y += deltaMove_Y * 0.1f;
 
-    m[0] = x;
+    m[0] = x; // Just to return data
     m[1] = y;
     m[2] = z;
     return m;
@@ -98,16 +98,16 @@ void processNormalKeysRelease(unsigned char key, int xx, int yy) {
 void pressKey(int key, int xx, int yy) {
 
     switch (key) {
-        case GLUT_KEY_UP : deltaMove = 5.0f; break;
-        case GLUT_KEY_DOWN : deltaMove = -5.0f; break;
+        case GLUT_KEY_UP : deltaMove = Moveconst; break;
+        case GLUT_KEY_DOWN : deltaMove = -Moveconst; break;
     }
 }
 
 void releaseKey(int key, int x, int y) {
 
     switch (key) {
-        case GLUT_KEY_UP :
-        case GLUT_KEY_DOWN : deltaMove = 0;break;
+        case GLUT_KEY_UP : deltaMove -= Moveconst; break;
+        case GLUT_KEY_DOWN : deltaMove -= -Moveconst; break;
     }
 }
 
