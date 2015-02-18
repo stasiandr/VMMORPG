@@ -247,9 +247,6 @@ void chunks(string is)
             z += (((int)is[i] - 48) * powm(10, 3-(i%4)));
     }
     //cout << x << ' ' << y << ' ' << z << endl;
-    x = 0;
-    y = 0;
-    z = 0;
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
