@@ -68,9 +68,9 @@ void Update()
 }
 int main(int argc, char** argv)
 {
-    st[0] = 0.0f;
-    st[1] = 10.0f;
-    st[2] = 0.0f;
+    st[0] = 10.0f;
+    st[1] = 50.0f;
+    st[2] = 10.0f;
     posses = st;
 
     fns[0] = "00.VMC";
@@ -136,7 +136,6 @@ int main(int argc, char** argv)
     glutMotionFunc(mouseMove);
 
 
-
     /* enter the main event loop so that GLUT can process
      all of the window event messages
      */
@@ -182,7 +181,7 @@ void display(void)
     for(int i = 0; i < 16; ++i)
         chunks(iss[i]);
 
-    deltaMove_Y -= 0.01f;
+    deltaMove_Y -= 0.017f;
     if (blocker[0])
         if (deltaMove_Y < 0)
             deltaMove_Y = 0;
@@ -265,9 +264,7 @@ void chunks(string is)
                     //chunk's borders drawing - BEGIN
                     //drawModel::cube(i+x*wid, j+y*hei, k+z*dee);
                     if (bad(i-1, j, k))
-                    {
                         drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
-                    }
                     if (bad(i+1, j, k))
                         drawModel::plain_side_reversed(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid+1, 1.0f, 0.0f, 1.0f);
                     if (bad(i, j-1, k))
