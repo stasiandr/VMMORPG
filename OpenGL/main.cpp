@@ -175,8 +175,6 @@ void display(void)
               0.0f, 1.0f,  0.0f);
 
     //---
-    if (deltaMove || deltaMove_Sides || deltaMove_Y)
-        posses = computePos(deltaMove, deltaMove_Sides, deltaMove_Y);
 
     for(int i = 0; i < 16; ++i)
         chunks(iss[i]);
@@ -188,6 +186,12 @@ void display(void)
     if (blocker[1])
         if (deltaMove_Y > 0)
             deltaMove_Y = 0;
+    if (blocker[2])
+        if (deltaMove > 0)
+            deltaMove = 0;
+
+    if (deltaMove || deltaMove_Sides || deltaMove_Y)
+        posses = computePos(deltaMove, deltaMove_Sides, deltaMove_Y);
 
     for(int b = 0; b < 6; ++b)
        blocker[b] = false;
@@ -245,49 +249,53 @@ void chunks(string is)
         else if (i < 12)
             z += (((int)is[i] - 48) * powm(10, 3-(i%4)));
     }
-    //cout << x << ' ' << y << ' ' << z << endl;
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
-    int tx = (int)posses[0];
-    int ty = (int)posses[1]-1;
-    int tz = (int)posses[2];
+    float tx = posses[0] - 0.5f;
+    float ty = posses[1]-1;
+    float tz = posses[2] - 0.5f;
     for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
             for (int k = 0; k < dee; k++)
                 if (is[i*hei*dee + j*dee + k + de] == '1')
                 {
-                    if (j+y*hei == ty && (i+x*wid == tx || i+x*wid == tx+1) && (k+z*dee == tz || k+z*dee == tz+1))
+                    float xbc = i+x*wid;
+                    float ybc = j+y*hei;
+                    float zbc = k+z*dee;
+                    if ((abs(ybc - ty) < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f))
                         blocker[0] = true;
-                    if (j+y*hei == ty+1 && (i+x*wid == tx || i+x*wid == tx+1) && (k+z*dee == tz || k+z*dee == tz+1))
+                    if ((abs(ybc - ty - 1) < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f))
                         blocker[1] = true;
+                    if ((abs(ybc - ty - 1) < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f))
+                        blocker[2] = true;
                     //chunk's borders drawing - BEGIN
-                    //drawModel::cube(i+x*wid, j+y*hei, k+z*dee);
+                    //drawModel::cube(xbc, ybc, zbc);
                     if (bad(i-1, j, k))
-                        drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
+                        drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, 1.0f, 0.0f, 0.0f);
                     if (bad(i+1, j, k))
-                        drawModel::plain_side_reversed(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid+1, 1.0f, 0.0f, 1.0f);
+                        drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, 1.0f, 0.0f, 1.0f);
                     if (bad(i, j-1, k))
-                        drawModel::plain_top_reversed(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei, 1.0f, 1.0f, 0.0f);
+                        drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, 1.0f, 1.0f, 0.0f);
                     if (bad(i, j+1, k))
-                        drawModel::plain_top(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei+1, 0.0f, 1.0f, 0.0f);
+                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, 0.0f, 1.0f, 0.0f);
                     if (bad(i, j, k-1))
-                        drawModel::plain_front(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee, 0.0f, 1.0f, 1.0f);
+                        drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, 0.0f, 1.0f, 1.0f);
                     if (bad(i, j, k+1))
-                        drawModel::plain_front_reversed(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee+1, 0.0f, 0.0f, 1.0f);
+                        drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, 0.0f, 0.0f, 1.0f);
                     // chunk's borders drawing - END
                     if (is[(i-1)*wid*dee + j*dee + k + de] == '0')
-                        drawModel::plain_side(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid, 1.0f, 0.0f, 0.0f);
+                        drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, 1.0f, 0.0f, 0.0f);
                     if (is[(i+1)*wid*dee + j*dee + k + de] == '0')
-                        drawModel::plain_side_reversed(j+y*hei, k+z*dee, j+y*hei+1, k+z*dee+1, i+x*wid+1, 1.0f, 0.0f, 1.0f);
+                        drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, 1.0f, 0.0f, 1.0f);
                     if (is[i*wid*dee + (j-1)*dee + k + de] == '0')
-                        drawModel::plain_top_reversed(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei, 1.0f, 1.0f, 0.0f);
+                        drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, 1.0f, 1.0f, 0.0f);
                     if (is[i*wid*dee + (j+1)*dee + k + de] == '0')
-                        drawModel::plain_top(i+x*wid, k+z*dee, i+x*wid+1, k+z*dee+1, j+y*hei+1, 0.0f, 1.0f, 0.0f);
+                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, 0.0f, 1.0f, 0.0f);
                     if (is[i*wid*dee + j*dee + k-1 + de] == '0')
-                        drawModel::plain_front(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee, 0.0f, 1.0f, 1.0f);
+                        drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, 0.0f, 1.0f, 1.0f);
                     if (is[i*wid*dee + j*dee + k+1 + de] == '0')
-                        drawModel::plain_front_reversed(i+x*wid, j+y*hei, i+x*wid+1, j+y*hei+1, k+z*dee+1, 0.0f, 0.0f, 1.0f);
+                        drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, 0.0f, 0.0f, 1.0f);
                 }
 
     glEnd();
