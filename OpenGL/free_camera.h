@@ -54,12 +54,16 @@ void mouseButton(int, int, int, int);
 float m[3];
 float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
 {
-    x += deltaMove_Sides * Slx * 0.1f; // Slx = cos(angle + deltaAngle)
+    /*x += deltaMove_Sides * Slx * 0.1f; // Slx = cos(angle + deltaAngle)
     z += deltaMove_Sides * Slz * 0.1f; // Slz = sin(angle + deltaAngle)
 
     x += deltaMove * lx * 0.1f; // lx = sin(angle + deltaAngle)
-    z += deltaMove * lz * 0.1f; // lz = -cos(angle + deltaAngle)
-    //!y += deltaMove * ly * 0.1f; // ly = sin(Yangle + YdeltaAngle) Это НЕ НУЖНА!
+    z += deltaMove * lz * 0.1f; // lz = -cos(angle + deltaAngle)*/ // old version
+
+    x += deltaMove * 0.1f;
+    z += deltaMove_Sides * 0.1f;
+
+    //!y += deltaMove * ly * 0.1f; // ly = sin(Yangle + YdeltaAngle) ЭТА НЕ НУЖНА!
 
     y += deltaMove_Y * 0.1f;
 
@@ -75,10 +79,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
         exit(0);
 
     switch (key) {
-        case 'w' : deltaMove = Moveconst; break;
-        case 's' : deltaMove = -Moveconst; break;
-        case 'd' : deltaMove_Sides = Moveconst; break;
-        case 'a' : deltaMove_Sides = -Moveconst; break;
+        case 'w' : deltaMove += Moveconst * lx; deltaMove_Sides += Moveconst * lz; break;
+        case 's' : deltaMove += -Moveconst * lx; deltaMove_Sides += -Moveconst * lz; break;
+        case 'd' : deltaMove_Sides += Moveconst * Slz; deltaMove += Moveconst * Slx; break;
+        case 'a' : deltaMove_Sides += -Moveconst * Slz; deltaMove += -Moveconst * Slx; break;
         case ' ' : deltaMove_Y = MoveconstY; break;
     }
 
@@ -86,10 +90,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 
 void processNormalKeysRelease(unsigned char key, int xx, int yy) {
     switch (key) {
-        case 'w' : deltaMove -= Moveconst; break;
-        case 's' : deltaMove -= -Moveconst; break;
-        case 'd' : deltaMove_Sides -= Moveconst; break;
-        case 'a' : deltaMove_Sides -= -Moveconst; break;
+        case 'w' :
+        case 's' :
+        case 'd' :
+        case 'a' : deltaMove = 0; deltaMove_Sides = 0;
         case ' ' : break;
     }
 
@@ -106,8 +110,8 @@ void pressKey(int key, int xx, int yy) {
 void releaseKey(int key, int x, int y) {
 
     switch (key) {
-        case GLUT_KEY_UP : deltaMove -= Moveconst; break;
-        case GLUT_KEY_DOWN : deltaMove -= -Moveconst; break;
+        case GLUT_KEY_UP : deltaMove = 0; break;
+        case GLUT_KEY_DOWN : deltaMove = 0; break;
     }
 }
 
