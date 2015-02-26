@@ -205,11 +205,11 @@ void display(void)
     glVertex3f(-1000, 0, 0);
     glVertex3f(1000, 0, 0);
 
-    glVertex3f(0, -1000, 0);
-    glVertex3f(0, 1000, 0);
+    glVertex3f(0, -50, 0);
+    glVertex3f(0, 50, 0);
 
-    glVertex3f(0, 0, -1000);
-    glVertex3f(0, 0, 1000);
+    glVertex3f(0, 0, -20);
+    glVertex3f(0, 0, 20);
 
     glEnd();
 
@@ -263,12 +263,10 @@ void chunks(string is)
                     float xbc = i+x*wid;
                     float ybc = j+y*hei;
                     float zbc = k+z*dee;
-                    if ((abs(ybc - ty) < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f))
+                    if ((ty > ybc && ty - ybc < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f)) // not to fall through blocks
                         blocker[0] = true;
-                    if ((abs(ybc - ty - 1) < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f))
+                    if ((ty < ybc && ybc - ty - 0.5f < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f)) // not to jump into the upper block
                         blocker[1] = true;
-                    if ((abs(ybc - ty - 1) < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f))
-                        blocker[2] = true;
                     //chunk's borders drawing - BEGIN
                     //drawModel::cube(xbc, ybc, zbc);
                     if (bad(i-1, j, k))
