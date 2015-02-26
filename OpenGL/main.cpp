@@ -28,6 +28,13 @@ int wid = 16;
 int hei = 16;
 int dee = 16;
 
+float abs(float etwas)
+{
+    if (etwas < 0)
+        etwas = -etwas;
+    return etwas;
+}
+
 bool bad(int i, int j, int k)
 {
     if (i >= 0 && j >= 0 && k >= 0)
@@ -69,7 +76,7 @@ void Update()
 int main(int argc, char** argv)
 {
     st[0] = 10.0f;
-    st[1] = 50.0f;
+    st[1] = 10.0f;
     st[2] = 10.0f;
     posses = st;
 
@@ -180,6 +187,10 @@ void display(void)
         chunks(iss[i]);
 
     deltaMove_Y -= 0.017f;
+
+    float reserveDeltaMove = deltaMove;
+    float reserveDeltaMove_Sides = deltaMove_Sides;
+
     if (blocker[0])
         if (deltaMove_Y < 0)
             deltaMove_Y = 0;
@@ -189,9 +200,21 @@ void display(void)
     if (blocker[2])
         if (deltaMove > 0)
             deltaMove = 0;
+    if (blocker[3])
+        if (deltaMove < 0)
+            deltaMove = 0;
+    if (blocker[4])
+        if (deltaMove_Sides > 0)
+            deltaMove_Sides = 0;
+    if (blocker[5])
+        if (deltaMove_Sides < 0)
+            deltaMove_Sides = 0;
 
     if (deltaMove || deltaMove_Sides || deltaMove_Y)
         posses = computePos(deltaMove, deltaMove_Sides, deltaMove_Y);
+
+    deltaMove = reserveDeltaMove;
+    deltaMove_Sides = reserveDeltaMove_Sides;
 
     for(int b = 0; b < 6; ++b)
        blocker[b] = false;
@@ -253,7 +276,7 @@ void chunks(string is)
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
     float tx = posses[0] - 0.5f;
-    float ty = posses[1]-1;
+    float ty = posses[1] - 1.5f;
     float tz = posses[2] - 0.5f;
     for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
@@ -263,10 +286,20 @@ void chunks(string is)
                     float xbc = i+x*wid;
                     float ybc = j+y*hei;
                     float zbc = k+z*dee;
-                    if ((ty > ybc && ty - ybc < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f)) // not to fall through blocks
+                    if ((ty > ybc && ty - ybc < 1.0f) && (abs(xbc - tx) <= 0.5f) && (abs(zbc - tz) <= 0.5f)) // not to fall through blocks
                         blocker[0] = true;
-                    if ((ty < ybc && ybc - ty - 0.5f < 1.0f) && (abs(xbc - tx) < 1.0f) && (abs(zbc - tz) < 1.0f)) // not to jump into the upper block
+                    if ((ty + 1.0f < ybc && ybc - (ty + 1.0f) < 1.0f) && (abs(xbc - tx) <= 0.5f) && (abs(zbc - tz) <= 0.5f)) // not to jump into the upper block
                         blocker[1] = true;
+
+                    if (((tx + 1.0f) > xbc && (tx + 1.0f) - xbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tz - zbc) < 0.55f))
+                        blocker[2] = true;
+                    if ((tx > xbc && tx - xbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tz - zbc) < 0.55f))
+                        blocker[3] = true;
+
+                    if (((tz + 1.0f) > zbc && (tz + 1.0f) - zbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tx - xbc) < 0.55f))
+                        blocker[4] = true;
+                    if ((tz > zbc && tz - zbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tx - xbc) < 0.55f))
+                        blocker[5] = true;
                     //chunk's borders drawing - BEGIN
                     //drawModel::cube(xbc, ybc, zbc);
                     if (bad(i-1, j, k))
