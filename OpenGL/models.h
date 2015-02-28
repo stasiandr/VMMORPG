@@ -70,7 +70,7 @@ GLuint loadBMP_custom(const char * imagepath)
 class drawModel {
 public:
     static void cube(float, float, float);
-    static void plain_top (float, float, float, float, float, float, float, float);
+    static void plain_top (float, float, float, float, float, GLuint, float, float, float);
     static void plain_side (float, float, float, float, float, float, float, float);
     static void plain_front (float, float, float, float, float, float, float, float);
     static void plain_top_reversed (float, float, float, float, float, float, float, float);
@@ -121,13 +121,14 @@ void drawModel::cube(float pos_x, float pos_y, float pos_z)
 }
 
 
-void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, GLuint t, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
-    GLuint Texture = loadBMP_custom("uvtemplate.bmp");
+    glBindTexture(GL_TEXTURE_2D, t);
 
-    //glTexCoord3f(0.0f, 0.0f, 0.0f);
+    //glColor3f(c1, c2, c3);
 
-    glColor3f(c1, c2, c3);
+    glTexCoord2f(x1, z1);
+
     glVertex3f(x1, y, z1);
     glVertex3f(x1, y, z2);
     glVertex3f(x2, y, z2);
