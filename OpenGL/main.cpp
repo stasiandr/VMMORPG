@@ -11,11 +11,36 @@
 #include <windows.h>
 #include "glut.h"
 #include "glu.h"
+#include "glaux.h"
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
 
 using namespace std;
+
+static HGLRC hRC;		// Постоянный контекст рендеринга
+static HDC hDC;			// Приватный контекст устройства GDI
+
+GLuint texture[1];
+
+// Загрузка картинки и конвертирование в текстуру
+GLvoid LoadGLTextures(const char * imagepath)
+{
+	// Загрузка картинки
+	AUX_RGBImageRec *texture1;
+	texture1 = auxDIBImageLoad(imagepath);
+
+	// Создание текстуры
+	glGenTextures(1, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
+    GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
+}
+
 
 void display(void);
 void reshape(int, int);
@@ -52,8 +77,6 @@ int okr(float n)
     else if (n >= s+1 and n < s+2)
         return s;
 }
-
-GLuint Texture;
 
 float * posses;
 float st[3];
@@ -118,6 +141,9 @@ int main(int argc, char** argv)
     /* create the window (and call it Lab 1) */
     glutCreateWindow("Lab 1");
 
+    LoadGLTextures("uvtemplate.bmp");			// Загрузка текстур
+    glEnable(GL_TEXTURE_2D);
+
     /* set the glut display callback function
      this is the function GLUT will call every time
      the window needs to be drawn
@@ -143,8 +169,6 @@ int main(int argc, char** argv)
     glClearColor(0,0,0,1);
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMove);
-
-    GLuint Texture = loadBMP_custom("uvtemplate.bmp");
 
     /* enter the main event loop so that GLUT can process
      all of the window event messages
@@ -312,7 +336,7 @@ void chunks(string is)
                     if (bad(i, j-1, k))
                         drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, 1.0f, 1.0f, 0.0f);
                     if (bad(i, j+1, k))
-                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, 0.0f, 1.0f, 0.0f);
+                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, texture[0], 0.0f, 1.0f, 0.0f);
                     if (bad(i, j, k-1))
                         drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, 0.0f, 1.0f, 1.0f);
                     if (bad(i, j, k+1))
