@@ -11,7 +11,7 @@
 #include <windows.h>
 #include "glut.h"
 #include "glu.h"
-#include "glaux.h"
+//#include "glaux.h"
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
@@ -24,7 +24,7 @@ static HDC hDC;			// Приватный контекст устройства GD
 GLuint texture[1];
 
 // Загрузка картинки и конвертирование в текстуру
-GLvoid LoadGLTextures(const char * imagepath)
+/*GLvoid LoadGLTextures(const char * imagepath)
 {
 	// Загрузка картинки
 	AUX_RGBImageRec *texture1;
@@ -39,7 +39,7 @@ GLvoid LoadGLTextures(const char * imagepath)
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
     GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
-}
+}*/
 
 
 void display(void);
@@ -90,7 +90,7 @@ void display(void);
 /*! GLUT window reshape callback function */
 void reshape(int, int);
 
-const char * fns[16];
+char fns[16][14];
 string iss[16];
 
 void Update()
@@ -100,12 +100,25 @@ void Update()
 }
 int main(int argc, char** argv)
 {
+    string path1 = "chunks/";
+    string path2 = ".VMC";
     st[0] = 10.0f;
-    st[1] = 20.0f;
+    st[1] = 100.0f;
     st[2] = 10.0f;
     posses = st;
 
-    fns[0] = "00.VMC";
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+        {
+            string path;
+            path = (char)(i + '0');
+            path += (char)(j + '0');
+            string fullpath = path1 + path + path2;
+            for (int k = 0; k < 13; ++k)
+                fns[i*4 + j][k] = fullpath[k];
+            fns[i*4 + j][13] = 0;
+        }
+    /*fns[0] = "00.VMC";
     fns[1] = "01.VMC";
     fns[2] = "02.VMC";
     fns[3] = "03.VMC";
@@ -123,7 +136,7 @@ int main(int argc, char** argv)
     fns[12] = "30.VMC";
     fns[13] = "31.VMC";
     fns[14] = "32.VMC";
-    fns[15] = "33.VMC";
+    fns[15] = "33.VMC";*/
 
     Update();
 
@@ -141,7 +154,7 @@ int main(int argc, char** argv)
     /* create the window (and call it Lab 1) */
     glutCreateWindow("Lab 1");
 
-    LoadGLTextures("uvtemplate.bmp");			// Загрузка текстур
+    //LoadGLTextures("uvtemplate.bmp");			// Загрузка текстур
     glEnable(GL_TEXTURE_2D);
 
     /* set the glut display callback function
@@ -336,7 +349,7 @@ void chunks(string is)
                     if (bad(i, j-1, k))
                         drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, 1.0f, 1.0f, 0.0f);
                     if (bad(i, j+1, k))
-                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, texture[0], 0.0f, 1.0f, 0.0f);
+                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, 0.0f, 1.0f, 0.0f);
                     if (bad(i, j, k-1))
                         drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, 0.0f, 1.0f, 1.0f);
                     if (bad(i, j, k+1))
