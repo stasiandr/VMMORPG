@@ -11,11 +11,36 @@
 #include <windows.h>
 #include "glut.h"
 #include "glu.h"
+//#include "glaux.h"
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
 
 using namespace std;
+
+static HGLRC hRC;		// Постоянный контекст рендеринга
+static HDC hDC;			// Приватный контекст устройства GDI
+
+GLuint texture[1];
+
+// Загрузка картинки и конвертирование в текстуру
+/*GLvoid LoadGLTextures(const char * imagepath)
+{
+	// Загрузка картинки
+	AUX_RGBImageRec *texture1;
+	texture1 = auxDIBImageLoad(imagepath);
+
+	// Создание текстуры
+	glGenTextures(1, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
+    GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
+}*/
+
 
 void display(void);
 void reshape(int, int);
@@ -24,9 +49,9 @@ void chunks(string);
 /*Getting one chunk-string function*/
 string getchunk(const char *);
 
-int wid = 16;
-int hei = 16;
-int dee = 16;
+int wid = 6;
+int hei = 6;
+int dee = 6;
 
 float abs(float etwas)
 {
@@ -65,7 +90,7 @@ void display(void);
 /*! GLUT window reshape callback function */
 void reshape(int, int);
 
-const char * fns[16];
+char fns[16][14];
 string iss[16];
 
 void Update()
@@ -75,12 +100,25 @@ void Update()
 }
 int main(int argc, char** argv)
 {
+    string path1 = "chunks/";
+    string path2 = ".VMC";
     st[0] = 10.0f;
-    st[1] = 10.0f;
+    st[1] = 100.0f;
     st[2] = 10.0f;
     posses = st;
 
-    fns[0] = "00.VMC";
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+        {
+            string path;
+            path = (char)(i + '0');
+            path += (char)(j + '0');
+            string fullpath = path1 + path + path2;
+            for (int k = 0; k < 13; ++k)
+                fns[i*4 + j][k] = fullpath[k];
+            fns[i*4 + j][13] = 0;
+        }
+    /*fns[0] = "00.VMC";
     fns[1] = "01.VMC";
     fns[2] = "02.VMC";
     fns[3] = "03.VMC";
@@ -98,7 +136,7 @@ int main(int argc, char** argv)
     fns[12] = "30.VMC";
     fns[13] = "31.VMC";
     fns[14] = "32.VMC";
-    fns[15] = "33.VMC";
+    fns[15] = "33.VMC";*/
 
     Update();
 
@@ -115,6 +153,9 @@ int main(int argc, char** argv)
 
     /* create the window (and call it Lab 1) */
     glutCreateWindow("Lab 1");
+
+    //LoadGLTextures("uvtemplate.bmp");			// Загрузка текстур
+    glEnable(GL_TEXTURE_2D);
 
     /* set the glut display callback function
      this is the function GLUT will call every time
@@ -142,7 +183,6 @@ int main(int argc, char** argv)
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMove);
 
-
     /* enter the main event loop so that GLUT can process
      all of the window event messages
      */
@@ -150,7 +190,6 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
 
 
 
@@ -278,6 +317,7 @@ void chunks(string is)
     float tx = posses[0] - 0.5f;
     float ty = posses[1] - 1.5f;
     float tz = posses[2] - 0.5f;
+
     for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
             for (int k = 0; k < dee; k++)
