@@ -54,16 +54,8 @@ void mouseButton(int, int, int, int);
 float m[3];
 float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
 {
-    /*x += deltaMove_Sides * Slx * 0.1f; // Slx = cos(angle + deltaAngle)
-    z += deltaMove_Sides * Slz * 0.1f; // Slz = sin(angle + deltaAngle)
-
-    x += deltaMove * lx * 0.1f; // lx = sin(angle + deltaAngle)
-    z += deltaMove * lz * 0.1f; // lz = -cos(angle + deltaAngle)*/ // old version
-
     x += deltaMove * 0.1f;
     z += deltaMove_Sides * 0.1f;
-
-    //!y += deltaMove * ly * 0.1f; // ly = sin(Yangle + YdeltaAngle) ЭТА НЕ НУЖНА!
 
     y += deltaMove_Y * 0.1f;
 
@@ -83,7 +75,7 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
         case 's' : deltaMove += -Moveconst * lx; deltaMove_Sides += -Moveconst * lz; break;
         case 'd' : deltaMove_Sides += Moveconst * Slz; deltaMove += Moveconst * Slx; break;
         case 'a' : deltaMove_Sides += -Moveconst * Slz; deltaMove += -Moveconst * Slx; break;
-        case ' ' : deltaMove_Y = MoveconstY; break;
+        case ' ' : deltaMove_Y += MoveconstY; break;
     }
 
 }
