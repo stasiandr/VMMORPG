@@ -24,7 +24,7 @@ float Yangle = 0.0f;
 float lx=0.0f,lz=1.0f, ly=0.0f;
 
 // XZ position of the camera
-float x=10.0f, z=10.0f, y=20.0f;
+float x=10.0f, z=10.0f, y=100.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -54,8 +54,16 @@ void mouseButton(int, int, int, int);
 float m[3];
 float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
 {
+    /*x += deltaMove_Sides * Slx * 0.1f; // Slx = cos(angle + deltaAngle)
+    z += deltaMove_Sides * Slz * 0.1f; // Slz = sin(angle + deltaAngle)
+
+    x += deltaMove * lx * 0.1f; // lx = sin(angle + deltaAngle)
+    z += deltaMove * lz * 0.1f; // lz = -cos(angle + deltaAngle)*/ // old version
+
     x += deltaMove * 0.1f;
     z += deltaMove_Sides * 0.1f;
+
+    //!y += deltaMove * ly * 0.1f; // ly = sin(Yangle + YdeltaAngle) ÝÒÀ ÍÅ ÍÓÆÍÀ!
 
     y += deltaMove_Y * 0.1f;
 
@@ -71,10 +79,12 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
         exit(0);
 
     switch (key) {
+        case 'q' : mouseButton(GLUT_LEFT_BUTTON, GLUT_UP, -1, -1); raycast(x, y, z, angle, Yangle);
         case 'w' : deltaMove += Moveconst * lx; deltaMove_Sides += Moveconst * lz; break;
         case 's' : deltaMove += -Moveconst * lx; deltaMove_Sides += -Moveconst * lz; break;
         case 'd' : deltaMove_Sides += Moveconst * Slz; deltaMove += Moveconst * Slx; break;
         case 'a' : deltaMove_Sides += -Moveconst * Slz; deltaMove += -Moveconst * Slx; break;
+        //case 'z' : deltaMove_Y -= MoveconstY; break;
         case ' ' : deltaMove_Y += MoveconstY; break;
     }
 
@@ -85,8 +95,9 @@ void processNormalKeysRelease(unsigned char key, int xx, int yy) {
         case 'w' :
         case 's' :
         case 'd' :
-        case 'a' : deltaMove = 0; deltaMove_Sides = 0;
-        case ' ' : break;
+        case 'a' : deltaMove = 0; deltaMove_Sides = 0; break;
+        //case 'z' :
+        case ' ' : /*deltaMove_Y = 0; */break;
     }
 
 }
