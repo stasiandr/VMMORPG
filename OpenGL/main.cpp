@@ -17,14 +17,10 @@
     //#include <GL/glaux.h>
 #endif
 
-bool IsFull(int x, int y, int z);
 
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include "free_camera.h"
-#include "models.h"
-#include "raycast.h"
 
 using namespace std;
 
@@ -50,18 +46,7 @@ GLuint texture[1];
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
     GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 }*/
-
-bool IsFull(int x, int y, int z);
-{
-    /*
-    if (iss[x*hei*dee + y*dee + z] == '1')
-        return true;
-    else if (iss[x*hei*dee + y*dee + z] == '0')
-        return false;
-    else
-        return -1;*/
-    return true;
-}
+void Update();
 
 void display(void);
 void reshape(int, int);
@@ -74,13 +59,51 @@ int wid = 6;
 int hei = 6;
 int dee = 6;
 
+float * posses;
+float st[3];
+bool blocker [6];
+
+GLfloat rtri;
+float vel = 0.0f;
+
+/*! GLUT display callback function */
+void display(void);
+/*! GLUT window reshape callback function */
+void reshape(int, int);
+
+char fns[16][14];
+string iss[16];
+
+struct block
+{
+    int x, y, z;
+    int side;
+};
+
+bool IsFull(int x, int y, int z);
+block raycast(float x, float y, float z, float an, float yan);
+
+#include "raycast.h"
+#include "free_camera.h"
+#include "models.h"
+
+bool IsFull(int x, int y, int z)
+{
+    /*
+    if (iss[x*hei*dee + y*dee + z] == '1')
+        return true;
+    else if (iss[x*hei*dee + y*dee + z] == '0')
+        return false;
+    else
+        return -1;*/
+    return true;
+}
 float abs(float etwas)
 {
     if (etwas < 0)
         etwas = -etwas;
     return etwas;
 }
-
 bool bad(int i, int j, int k)
 {
     if (i >= 0 && j >= 0 && k >= 0)
@@ -98,22 +121,6 @@ int okr(float n)
     else if (n >= s+1 and n < s+2)
         return s;
 }
-
-float * posses;
-float st[3];
-bool blocker [6];
-
-GLfloat rtri;
-float vel = 0.0f;
-
-/*! GLUT display callback function */
-void display(void);
-/*! GLUT window reshape callback function */
-void reshape(int, int);
-
-char fns[16][14];
-string iss[16];
-
 void Update()
 {
     for(int i = 0; i < 16; ++i)
