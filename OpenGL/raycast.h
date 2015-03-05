@@ -20,27 +20,24 @@ block raycast(float x, float y, float z, float an, float yan)
         r1 = xc / cos(an) / cos(yan);
         r2 = zc / sin(an) / cos(yan);
         r3 = yc / sin(yan);
-        cout << an << " " << yan << endl;
+        /*cout << an << " " << yan << endl;
         cout << sin(an) << " " << cos(an) << " " << sin(yan) << " " << cos(yan) << endl;
         cout << xc / cos(an) / cos(yan) << ' ' << zc / sin(an) / cos(yan) << ' ' << yc / sin(yan) << endl;
         cout << r1 << ' ' << r2 << ' ' << r3 << endl;
-        cout << i << " start" << endl;
+        cout << i << " start" << endl;*/
         if (r1 < r2 && r1 < r3)
         {
-            cout << i << " first if started" << endl;
             int y1, z1;
             z1 = xc / cos(an) * sin (an);
-            cout << i << " first if started 2" << endl;
             y1 = xc / cos(an) / cos(yan) * sin(yan);
-            cout << i << " first if started 3" << endl;
             if (IsFull(xc, y1, z1))
             {
+                cout << xc << " " << y1 << " " << z1 << " In 1 if has gone" << endl;
                 result.x = xc;
                 result.y = y1;
                 result.z = z1;
                 break;
             }
-            cout << i << " first if finished" << endl;
         }
         else if (r2 < r3)
         {
@@ -49,11 +46,13 @@ block raycast(float x, float y, float z, float an, float yan)
             y1 = zc / sin(an) / cos(yan) * sin(yan);
             if (IsFull(x1, y1, zc))
             {
+                cout << x1 << " " << y1 << " " << zc << " In 2 if has gone" << endl;
                 result.x = x1;
                 result.y = y1;
                 result.z = zc;
                 break;
             }
+            cout << " 2 if finished" << endl;
         }
         else
         {
@@ -62,19 +61,27 @@ block raycast(float x, float y, float z, float an, float yan)
             z1 = yc / sin(yan) * cos(yan) * sin(an);
             if (IsFull(x1, yc, z1))
             {
+                cout << x1 << " " << yc << " " << z1 << " In 3 if has gone" << endl;
                 result.x = x1;
                 result.y = yc;
                 result.z = z1;
                 break;
             }
+            cout << " 3 if finished" << endl;
         }
         x0 = xc;
         y0 = yc;
         z0 = zc;
         cout << i << " suceed\n";
     }
-    iss[result.x*hei*dee + result.y*dee + result.z] = '0';
+    int tex, tey, tez;
+    tex = result.x % 6;
+    tey = result.y % 6;
+    tez = result.z % 6;
+    int ch = (int)(result.x / 6)*4 + (int)(result.y / 6);
+    cout << ch << " " << tex << " " << tey << " " << tez << " before replacing\n";
+    iss[ch][tex*hei*dee + tey*dee + tez] = '0';
     cout << "replace sucessfull\n";
-    Update();
+    //Update();
     return result;
 }
