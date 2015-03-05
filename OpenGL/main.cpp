@@ -17,11 +17,14 @@
     //#include <GL/glaux.h>
 #endif
 
+bool IsFull(int x, int y, int z);
+
 #include <iostream>
 #include <fstream>
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
+#include "raycast.h"
 
 using namespace std;
 
@@ -48,6 +51,17 @@ GLuint texture[1];
     GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 }*/
 
+bool IsFull(int x, int y, int z);
+{
+    /*
+    if (iss[x*hei*dee + y*dee + z] == '1')
+        return true;
+    else if (iss[x*hei*dee + y*dee + z] == '0')
+        return false;
+    else
+        return -1;*/
+    return true;
+}
 
 void display(void);
 void reshape(int, int);
