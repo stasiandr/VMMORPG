@@ -1,12 +1,7 @@
 //raycast.h
 
-struct block
-{
-    int x, y, z;
-    int side;
-};
+using namespace std;
 
-block raycast(float, float, float, float, float);
 bool IsFull(int, int, int);
 
 block raycast(float x, float y, float z, float an, float yan)
@@ -17,6 +12,7 @@ block raycast(float x, float y, float z, float an, float yan)
     int z0 = static_cast<int>(z);
     for (int i = 0; i < 25; ++i)
     {
+        cout << i << endl;
         int xc = x0 + 1;
         int yc = y0 + 1;
         int zc = z0 + 1;
@@ -24,11 +20,19 @@ block raycast(float x, float y, float z, float an, float yan)
         r1 = xc / cos(an) / cos(yan);
         r2 = zc / sin(an) / cos(yan);
         r3 = yc / sin(yan);
+        cout << an << " " << yan << endl;
+        cout << sin(an) << " " << cos(an) << " " << sin(yan) << " " << cos(yan) << endl;
+        cout << xc / cos(an) / cos(yan) << ' ' << zc / sin(an) / cos(yan) << ' ' << yc / sin(yan) << endl;
+        cout << r1 << ' ' << r2 << ' ' << r3 << endl;
+        cout << i << " start" << endl;
         if (r1 < r2 && r1 < r3)
         {
+            cout << i << " first if started" << endl;
             int y1, z1;
             z1 = xc / cos(an) * sin (an);
+            cout << i << " first if started 2" << endl;
             y1 = xc / cos(an) / cos(yan) * sin(yan);
+            cout << i << " first if started 3" << endl;
             if (IsFull(xc, y1, z1))
             {
                 result.x = xc;
@@ -36,10 +40,7 @@ block raycast(float x, float y, float z, float an, float yan)
                 result.z = z1;
                 break;
             }
-            else
-            {
-
-            }
+            cout << i << " first if finished" << endl;
         }
         else if (r2 < r3)
         {
@@ -70,19 +71,10 @@ block raycast(float x, float y, float z, float an, float yan)
         x0 = xc;
         y0 = yc;
         z0 = zc;
+        cout << i << " suceed\n";
     }
     iss[result.x*hei*dee + result.y*dee + result.z] = '0';
+    cout << "replace sucessfull\n";
+    Update();
     return result;
-}
-
-bool IsFull(int x, int y, int z)
-{
-    /*
-    if (iss[x*hei*dee + y*dee + z] == '1')
-        return true;
-    else if (iss[x*hei*dee + y*dee + z] == '0')
-        return false;
-    else
-        return -1;*/
-    return true;
 }
