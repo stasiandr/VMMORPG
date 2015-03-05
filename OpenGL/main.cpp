@@ -6,12 +6,19 @@
 //  Copyright (c) 2014 Argon Team. All rights reserved.
 //
 
+#ifdef _WIN32
+    #include <windows.h>
+    #include "glut.h"
+    #include "glu.h"
+    //#include "glaux.h"
+#elif TARGET_OS_MAC
+    #include <GL/glut.h>
+    #include <GL/glu.h>
+    //#include <GL/glaux.h>
+#endif
+
 #include <iostream>
 #include <fstream>
-#include <windows.h>
-#include "glut.h"
-#include "glu.h"
-//#include "glaux.h"
 #include <math.h>
 #include "free_camera.h"
 #include "models.h"
