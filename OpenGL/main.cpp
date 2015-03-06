@@ -35,14 +35,11 @@ GLuint texture[1];
 	// Загрузка картинки
 	AUX_RGBImageRec *texture1;
 	texture1 = auxDIBImageLoad(imagepath);
-
 	// Создание текстуры
 	glGenTextures(1, &texture[0]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
-
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
     GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 }*/
@@ -71,8 +68,9 @@ void display(void);
 /*! GLUT window reshape callback function */
 void reshape(int, int);
 
-char fns[16][14];
-string iss[16];
+const int n_c = 64;
+char fns[n_c][15];
+string iss[n_c];
 
 struct block
 {
@@ -82,6 +80,8 @@ struct block
 
 bool IsFull(int x, int y, int z);
 block raycast(float x, float y, float z, float an, float yan);
+
+bool gravity = false;
 
 #include "raycast.h"
 #include "free_camera.h"
@@ -113,17 +113,9 @@ bool bad(int i, int j, int k)
         }
     return true;
 }
-int okr(float n)
-{
-    int s = (int)n;
-    if (n >= s and n < s+1)
-        return s;
-    else if (n >= s+1 and n < s+2)
-        return s;
-}
 void Update()
 {
-    for(int i = 0; i < 16; ++i)
+    for(int i = 0; i < n_c; ++i)
         iss[i] = getchunk(fns[i]);
 }
 int main(int argc, char** argv)
@@ -137,34 +129,17 @@ int main(int argc, char** argv)
 
     for (int i = 0; i < 4; ++i)
         for (int j = 0; j < 4; ++j)
-        {
-            string path;
-            path = (char)(i + '0');
-            path += (char)(j + '0');
-            string fullpath = path1 + path + path2;
-            for (int k = 0; k < 13; ++k)
-                fns[i*4 + j][k] = fullpath[k];
-            fns[i*4 + j][13] = 0;
-        }
-    /*fns[0] = "00.VMC";
-    fns[1] = "01.VMC";
-    fns[2] = "02.VMC";
-    fns[3] = "03.VMC";
-
-    fns[4] = "10.VMC";
-    fns[5] = "11.VMC";
-    fns[6] = "12.VMC";
-    fns[7] = "13.VMC";
-
-    fns[8] = "20.VMC";
-    fns[9] = "21.VMC";
-    fns[10] = "22.VMC";
-    fns[11] = "23.VMC";
-
-    fns[12] = "30.VMC";
-    fns[13] = "31.VMC";
-    fns[14] = "32.VMC";
-    fns[15] = "33.VMC";*/
+            for (int k = 0; k < 4; ++k)
+            {
+                string path;
+                path = (char)(i + '0');
+                path += (char)(j + '0');
+                path += (char)(k + '0');
+                string fullpath = path1 + path + path2;
+                for (int e = 0; e < 14; ++e)
+                    fns[i*4*4 + j*4 + k][e] = fullpath[e];
+                fns[i*4*4 + j*4 + k][14] = 0;
+            }
 
     Update();
 
@@ -250,10 +225,11 @@ void display(void)
 
     //---
 
-    for(int i = 0; i < 16; ++i)
+    for(int i = 0; i < n_c; ++i)
         chunks(iss[i]);
 
-    deltaMove_Y -= 0.017f;
+    if (gravity)
+        deltaMove_Y -= 0.017f;
 
     float reserveDeltaMove = deltaMove;
     float reserveDeltaMove_Sides = deltaMove_Sides;
@@ -339,6 +315,7 @@ void chunks(string is)
         else if (i < 12)
             z += (((int)is[i] - 48) * powm(10, 3-(i%4)));
     }
+    //cout << x << y << z << endl;
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
