@@ -51,19 +51,19 @@ void releaseKey(int, int, int);
 void mouseMove(int, int);
 void mouseButton(int, int, int, int);
 
+void grswt()
+{
+    if(gravity)
+        gravity = false;
+    else
+        gravity = true;
+}
+
 float m[3];
 float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
 {
-    /*x += deltaMove_Sides * Slx * 0.1f; // Slx = cos(angle + deltaAngle)
-    z += deltaMove_Sides * Slz * 0.1f; // Slz = sin(angle + deltaAngle)
-
-    x += deltaMove * lx * 0.1f; // lx = sin(angle + deltaAngle)
-    z += deltaMove * lz * 0.1f; // lz = -cos(angle + deltaAngle)*/ // old version
-
     x += deltaMove * 0.1f;
     z += deltaMove_Sides * 0.1f;
-
-    //!y += deltaMove * ly * 0.1f; // ly = sin(Yangle + YdeltaAngle) ÝÒÀ ÍÅ ÍÓÆÍÀ!
 
     y += deltaMove_Y * 0.1f;
 
@@ -79,15 +79,17 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
         exit(0);
 
     switch (key) {
+        case 'g' : grswt(); break;
         case 'q' : mouseButton(GLUT_LEFT_BUTTON, GLUT_UP, -1, -1); raycast(x, y, z, angle, Yangle);
         case 'w' : deltaMove += Moveconst * lx; deltaMove_Sides += Moveconst * lz; break;
         case 's' : deltaMove += -Moveconst * lx; deltaMove_Sides += -Moveconst * lz; break;
         case 'd' : deltaMove_Sides += Moveconst * Slz; deltaMove += Moveconst * Slx; break;
         case 'a' : deltaMove_Sides += -Moveconst * Slz; deltaMove += -Moveconst * Slx; break;
-        //case 'z' : deltaMove_Y -= MoveconstY; break;
         case ' ' : deltaMove_Y += MoveconstY; break;
     }
-
+    if (!(gravity))
+        if (key == 'z')
+            deltaMove_Y -= MoveconstY;
 }
 
 void processNormalKeysRelease(unsigned char key, int xx, int yy) {
@@ -96,10 +98,13 @@ void processNormalKeysRelease(unsigned char key, int xx, int yy) {
         case 's' :
         case 'd' :
         case 'a' : deltaMove = 0; deltaMove_Sides = 0; break;
-        //case 'z' :
-        case ' ' : /*deltaMove_Y = 0; */break;
+        case ' ' : break;
     }
-
+    if (!(gravity))
+        switch (key) {
+            case 'z':
+            case ' ' : deltaMove_Y = 0; break;
+        }
 }
 
 void pressKey(int key, int xx, int yy) {
