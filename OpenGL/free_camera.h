@@ -79,8 +79,15 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
         exit(0);
 
     switch (key) {
-        case 'g' : grswt(); break;
-        case 'q' : mouseButton(GLUT_LEFT_BUTTON, GLUT_UP, -1, -1); raycast(x, y, z, angle, Yangle);
+        case 'g' : grswt(); deltaMove_Y = 0; break;
+        case 'i' : cout << "an: " << angle << " Yan: " << Yangle << " x: " << x << " y: " << y << " z: " << z << endl; break;
+        case 'f' : Update(); break;
+        case 'q' : for (int i = 0; i < 1; ++i)
+                    {
+                        mouseButton(GLUT_LEFT_BUTTON, GLUT_UP, -1, -1);
+                        raycast(x, y, z, angle, Yangle);
+                    }
+                    break;
         case 'w' : deltaMove += Moveconst * lx; deltaMove_Sides += Moveconst * lz; break;
         case 's' : deltaMove += -Moveconst * lx; deltaMove_Sides += -Moveconst * lz; break;
         case 'd' : deltaMove_Sides += Moveconst * Slz; deltaMove += Moveconst * Slx; break;
