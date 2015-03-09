@@ -89,14 +89,15 @@ bool gravity = false;
 
 bool IsFull(int x, int y, int z)
 {
-    /*
-    if (iss[x*hei*dee + y*dee + z] == '1')
+    int tex, tey, tez;
+    tex = x % 6;
+    tey = y % 6;
+    tez = z % 6;
+    int ch = (int)(x / 6)*4 + (int)(y / 6);
+    if (iss[ch][tex*hei*dee + tey*dee + tez + 12] == '1')
         return true;
-    else if (iss[x*hei*dee + y*dee + z] == '0')
+    else if (iss[ch][tex*hei*dee + tey*dee + tez + 12] == '0')
         return false;
-    else
-        return -1;*/
-    return true;
 }
 float abs(float etwas)
 {
