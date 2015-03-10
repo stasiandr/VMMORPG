@@ -24,7 +24,7 @@ float Yangle = 0.0f;
 float lx=0.0f,lz=1.0f, ly=0.0f;
 
 // XZ position of the camera
-float x=10.0f, z=10.0f, y=100.0f;
+float x=10.0f, z=10.0f, y=10.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
