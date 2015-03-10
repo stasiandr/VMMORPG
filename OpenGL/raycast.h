@@ -2,22 +2,58 @@
 
 using namespace std;
 
+double pi = 3.141592653589793238462643383279502884197f;
+
 bool IsFull(int, int, int);
 
 block raycast(float x, float y, float z, float an, float yan)
 {
+    while (an < 0)
+        an += 2 * pi;
+    while (yan < 0)
+        yan += 2 * pi;
+    while (an >= 2 * pi)
+        an -= 2 * pi;
+    while (yan >= 2 * pi)
+        yan -= 2 * pi;
+
     block result;
     bool nfound = true;
-    cout << cos(an) << " " << sin(an) << "\n" << cos(yan) << " " << sin(yan) << endl;
+    cout << an << " " << cos(an) << " " << sin(an) << "\n"
+    << yan << " " << cos(yan) << " " << sin(yan) << endl;
     for (int i = 0; i < 25; ++i)
     {
-        float x0 = static_cast<int>(x + 1);
-        float y0 = static_cast<int>(y + 1);
-        float z0 = static_cast<int>(z + 1);
-        float r1 = x0 / cos(an) / cos(yan);
-        float r2 = y0 / sin(yan);
-        float r3 = z0 / sin(an) / cos(yan);
-        cout << "i: " << i << " xyz: " << x << " " << y << " " << z << endl;;
+        float x0;
+        float y0;
+        float z0;
+        if (an <= pi && yan <= pi)
+        {
+            x0 = static_cast<int>(x + 1);
+            y0 = static_cast<int>(y + 1);
+            z0 = static_cast<int>(z + 1);
+        }
+        else if (an > pi && yan <= pi)
+        {
+            x0 = static_cast<int>(x - 1);
+            y0 = static_cast<int>(y + 1);
+            z0 = static_cast<int>(z + 1);
+        }
+        else if (an <= pi && yan > pi)
+        {
+            x0 = static_cast<int>(x - 1);
+            y0 = static_cast<int>(y + 1);
+            z0 = static_cast<int>(z - 1);
+        }
+        else if (an > pi && yan > pi)
+        {
+            x0 = static_cast<int>(x + 1);
+            y0 = static_cast<int>(y + 1);
+            z0 = static_cast<int>(z - 1);
+        }
+        float r1 = abs(x0 / cos(an) / cos(yan));
+        float r2 = abs(y0 / sin(yan));
+        float r3 = abs(z0 / sin(an) / cos(yan));
+        //cout << "i: " << i << " xyz: " << x << " " << y << " " << z << endl;;
         if (r1 < r2 && r1 < r3)
         {
             y0 = r1 * sin(yan);
@@ -88,6 +124,7 @@ block raycast(float x, float y, float z, float an, float yan)
         y = y0;
         z = z0;
     }
+    //cout << "for ended\n";
     if (nfound)
         return result;
     int tex, tey, tez;
@@ -98,7 +135,7 @@ block raycast(float x, float y, float z, float an, float yan)
     if (ch >= 0 and ch < n_c and tex >= 0 and tey >= 0 and tez >= 0)
     {
         if (iss[ch][tex*hei*dee + tey*dee + tez + 12] == '1')
-            cout << "YYYYYYYYYYYYYYYYYYPPPPPPPPPPPPPPPPPPPPAAAAAAAAAAAAAAAAAAAAA!!!\n";
+            cout << "YYYYYYYYYYYYYYYYYYPPPPPPPPPPPPPPPPPPPPAAAAAAAAAAAAAAAAAAAAA!!!";
         iss[ch][tex*hei*dee + tey*dee + tez+ 12] = '0';
         cout << ch << " " << tex << " " << tey << " " << tez << " replace successful\n";
     }
