@@ -124,7 +124,7 @@ int main(int argc, char** argv)
     string path1 = "chunks/";
     string path2 = ".VMC";
     st[0] = 10.0f;
-    st[1] = 100.0f;
+    st[1] = 10.0f;
     st[2] = 10.0f;
     posses = st;
 
