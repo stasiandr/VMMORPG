@@ -15,7 +15,7 @@
 // Camer Stuff --------
 
 float Moveconst = 0.5f;
-float MoveconstY = 1.0f;
+float MoveconstY = 0.2f;
 
 float angle = 0.0f;
 float Yangle = 0.0f;
@@ -24,7 +24,7 @@ float Yangle = 0.0f;
 float lx=0.0f,lz=1.0f, ly=0.0f;
 
 // XZ position of the camera
-float x=10.0f, z=10.0f, y=10.0f;
+float x=20.0f, z=20.0f, y=10.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -42,6 +42,8 @@ float Slx = 0, Slz = 0;
 
 float deltaMove_Y = 0;
 
+float Movew = 0;
+float Movea = 0;
 
 void processNormalKeys(unsigned char, int, int);
 void processNormalKeysRelease(unsigned char, int, int);
@@ -54,9 +56,15 @@ void mouseButton(int, int, int, int);
 void grswt()
 {
     if(gravity)
+	{
         gravity = false;
+		MoveconstY = 2.5f;
+	}
     else
+	{
         gravity = true;
+		MoveconstY = 0.7f;
+	}
 }
 
 float m[3];
