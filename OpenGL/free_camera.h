@@ -63,7 +63,7 @@ void grswt()
     else
 	{
         gravity = true;
-		MoveconstY = 0.7f;
+		MoveconstY = 0.2f;
 	}
 }
 
