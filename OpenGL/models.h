@@ -8,12 +8,13 @@
 
 #ifndef OpenGL_models_h
 #define OpenGL_models_h
+
 #endif
 
 class drawModel {
 public:
     static void cube(float, float, float);
-    static void plain_top (float, float, float, float, float, GLuint, float, float, float);
+    static void plain_top (float, float, float, float, float, float, float, float);
     static void plain_side (float, float, float, float, float, float, float, float);
     static void plain_front (float, float, float, float, float, float, float, float);
     static void plain_top_reversed (float, float, float, float, float, float, float, float);
@@ -63,59 +64,131 @@ void drawModel::cube(float pos_x, float pos_y, float pos_z)
 
 }
 
+bool color = false;
 
-void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, GLuint t, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
+	if (color)
+	{
+		glColor3f(c1, c2, c3);
+		glVertex3f(x1, y, z1);
+		glVertex3f(x1, y, z2);
+	    glVertex3f(x2, y, z2);
+		glVertex3f(x2, y, z1);
+	}
+	else
+	{
+		// Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
+		glBindTexture(GL_TEXTURE_2D, textures[ind]);
 
-    //glColor3f(c1, c2, c3);
+		// Передадим изображение OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-    glTexCoord2f(x1, z1); glVertex3f(x1, y, z1);
-    glTexCoord2f(x1, z2); glVertex3f(x1, y, z2);
-    glTexCoord2f(x2, z2); glVertex3f(x2, y, z2);
-    glTexCoord2f(x2, z1); glVertex3f(x2, y, z1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexCoord2f(x1, z1); glVertex3f(x1, y, z1);
+	    glTexCoord2f(x1, z2); glVertex3f(x1, y, z2);
+		glTexCoord2f(x2, z2); glVertex3f(x2, y, z2);
+	    glTexCoord2f(x2, z1); glVertex3f(x2, y, z1);
+	}
 }
 
  void drawModel::plain_side (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
-    glColor3f(c1, c2, c3);
-    glVertex3f(x, y1, z1);
-    glVertex3f(x, y1, z2);
-    glVertex3f(x, y2, z2);
-    glVertex3f(x, y2, z1);
+	if (color)
+	{
+		glColor3f(c1, c2, c3);
+		glVertex3f(x, y1, z1);
+		glVertex3f(x, y1, z2);
+	    glVertex3f(x, y2, z2);
+		glVertex3f(x, y2, z1);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		glTexCoord2f(y1, z1); glVertex3f(x, y1, z1);
+	    glTexCoord2f(y1, z2); glVertex3f(x, y1, z2);
+		glTexCoord2f(y2, z2); glVertex3f(x, y2, z2);
+	    glTexCoord2f(y2, z1); glVertex3f(x, y2, z1);
+	}
 }
 void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 =1.0f, float c3 = 1.0f)
 {
-    glColor3f(c1, c2, c3);
-    glVertex3f(x1, y1, z);
-    glVertex3f(x1, y2, z);
-    glVertex3f(x2, y2, z);
-    glVertex3f(x2, y1, z);
+	if (color)
+	{
+		glColor3f(c1, c2, c3);
+		glVertex3f(x1, y1, z);
+		glVertex3f(x1, y2, z);
+	    glVertex3f(x2, y2, z);
+		glVertex3f(x2, y1, z);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		glTexCoord2f(x1, y1); glVertex3f(x1, y1, z);
+	    glTexCoord2f(x1, y2); glVertex3f(x1, y2, z);
+		glTexCoord2f(x2, y2); glVertex3f(x2, y2, z);
+	    glTexCoord2f(x2, y1); glVertex3f(x2, y1, z);
+	}
 }
 
 
 void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
-    glColor3f(c1, c2, c3);
-    glVertex3f(x2, y, z1);
-    glVertex3f(x2, y, z2);
-    glVertex3f(x1, y, z2);
-    glVertex3f(x1, y, z1);
+	if (color)
+	{
+		glColor3f(c1, c2, c3);
+		glVertex3f(x2, y, z1);
+		glVertex3f(x2, y, z2);
+	    glVertex3f(x1, y, z2);
+		glVertex3f(x1, y, z1);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		glTexCoord2f(x2, z1); glVertex3f(x2, y, z1);
+	    glTexCoord2f(x2, z2); glVertex3f(x2, y, z2);
+		glTexCoord2f(x1, z2); glVertex3f(x1, y, z2);
+	    glTexCoord2f(x1, z1); glVertex3f(x1, y, z1);
+	}
 }
 
 void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
-    glColor3f(c1, c2, c3);
-    glVertex3f(x, y2, z1);
-    glVertex3f(x, y2, z2);
-    glVertex3f(x, y1, z2);
-    glVertex3f(x, y1, z1);
+	if (color)
+	{
+		glColor3f(c1, c2, c3);
+		glVertex3f(x, y2, z1);
+		glVertex3f(x, y2, z2);
+	    glVertex3f(x, y1, z2);
+		glVertex3f(x, y1, z1);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		glTexCoord2f(y2, z1); glVertex3f(x, y2, z1);
+	    glTexCoord2f(y2, z2); glVertex3f(x, y2, z2);
+		glTexCoord2f(y1, z2); glVertex3f(x, y1, z2);
+	    glTexCoord2f(y1, z1); glVertex3f(x, y1, z1);
+	}
 }
 void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
 {
-    glColor3f(c1, c2, c3);
-    glVertex3f(x2, y1, z);
-    glVertex3f(x2, y2, z);
-    glVertex3f(x1, y2, z);
-    glVertex3f(x1, y1, z);
+	if (color)
+	{
+		glColor3f(c1, c2, c3);
+		glVertex3f(x2, y1, z);
+		glVertex3f(x2, y2, z);
+	    glVertex3f(x1, y2, z);
+		glVertex3f(x1, y1, z);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		glTexCoord2f(x2, y1); glVertex3f(x2, y1, z);
+	    glTexCoord2f(x2, y2); glVertex3f(x2, y2, z);
+		glTexCoord2f(x1, y2); glVertex3f(x1, y2, z);
+	    glTexCoord2f(x1, y1); glVertex3f(x1, y1, z);
+	}
 }
