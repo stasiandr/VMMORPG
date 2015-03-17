@@ -5,46 +5,36 @@
 //  Created by Irina on 24/11/14.
 //  Copyright (c) 2014 Argon Team. All rights reserved.
 //
+//#pragma comment(lib,"glaux.lib")
 
 #ifdef _WIN32
     #include <windows.h>
-    #include "glut.h"
-    #include "glu.h"
-    //#include "glaux.h"
+    #include "Headers\glut.h"
+    #include "Headers\glu.h"
+    #include "Headers\glaux.h"
 #elif TARGET_OS_MAC
     #include <GL/glut.h>
     #include <GL/glu.h>
-    //#include <GL/glaux.h>
+    #include <GL/glaux.h>
 #endif
 
 
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <string>
 
 using namespace std;
 
 static HGLRC hRC;		// Постоянный контекст рендеринга
 static HDC hDC;			// Приватный контекст устройства GDI
 
-GLuint texture[1];
+GLuint textures[6];
+unsigned char * data[6];
+unsigned int widths[6];
+unsigned int heights[6];
 
-// Загрузка картинки и конвертирование в текстуру
-/*GLvoid LoadGLTextures(const char * imagepath)
-{
-	// Загрузка картинки
-	AUX_RGBImageRec *texture1;
-	texture1 = auxDIBImageLoad(imagepath);
-	// Создание текстуры
-	glGenTextures(1, &texture[0]);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
-    GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
-}*/
-
-GLuint loadBMP_custom(const char * imagepath)
+void loadBMP_custom(const char * imagepath, int ind)
 {
     // Данные, прочитанные из заголовка BMP-файла
     unsigned char header[54]; // Каждый BMP-файл начинается с заголовка, длиной в 54 байта
@@ -55,16 +45,16 @@ GLuint loadBMP_custom(const char * imagepath)
     unsigned char * data;
     FILE * file = fopen(imagepath,"rb");
     if (!file) {
-      printf("Изображение не может быть открыто\n");
-      return 0;
+      cout << "1Изображение не может быть открыто\n";
+      return;
     }
     if ( fread(header, 1, 54, file) != 54 ) { // Если мы прочитали меньше 54 байт, значит возникла проблема
-        printf("Некорректный BMP-файл\n");
-        return false;
+        cout << "2Некорректный BMP-файл\n";
+        return;
     }
     if ( header[0]!='B' || header[1]!='M' ){
-        printf("Некорректный BMP-файл\n");
-        return 0;
+        cout << "3Некорректный BMP-файл\n";
+        return;
     }
     // Читаем необходимые данные
     dataPos    = *(int*)&(header[0x0A]); // Смещение данных изображения в файле
@@ -84,19 +74,21 @@ GLuint loadBMP_custom(const char * imagepath)
     fclose(file);
 
     // Создадим одну текстуру OpenGL
-    GLuint textureID;
-    glGenTextures(1, &textureID);
+    glGenTextures(1, &textures[ind]);
 
+	datas[ind] = data;
+	widths[ind] = width;
+	heights[ind] = height;
+
+	/*
     // Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, textures[ind]);
 
     // Передадим изображение OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    return textureID;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);*/
 }
 
 void Update();
@@ -114,7 +106,7 @@ int dee = 6;
 
 float * posses;
 float st[3];
-bool blocker [6];
+bool blocker [10];
 
 GLfloat rtri;
 float vel = 0.0f;
@@ -155,7 +147,7 @@ bool IsFull(int x, int y, int z)
     else if (iss[ch][tex*hei*dee + tey*dee + tez + 12] == '0')
         return false;
 }
-float abs(float etwas)
+float absm(float etwas)
 {
     if (etwas < 0)
         etwas = -etwas;
@@ -179,9 +171,9 @@ int main(int argc, char** argv)
 {
     string path1 = "chunks/";
     string path2 = ".VMC";
-    st[0] = 10.0f;
+    st[0] = 20.0f;
     st[1] = 10.0f;
-    st[2] = 10.0f;
+    st[2] = 20.0f;
     posses = st;
 
     for (int i = 0; i < 4; ++i)
@@ -192,7 +184,9 @@ int main(int argc, char** argv)
                 path = (char)(i + '0');
                 path += (char)(j + '0');
                 path += (char)(k + '0');
-                string fullpath = path1 + path + path2;
+                string fullpath = path1;
+				fullpath += path;
+				fullpath += path2;
                 for (int e = 0; e < 14; ++e)
                     fns[i*4*4 + j*4 + k][e] = fullpath[e];
                 fns[i*4*4 + j*4 + k][14] = 0;
@@ -214,7 +208,13 @@ int main(int argc, char** argv)
     /* create the window (and call it Lab 1) */
     glutCreateWindow("Lab 1");
 
-    LoadBMP_custom("uvtemplate.bmp");			// Загрузка текстур
+    loadBMP_custom("textures/0.BMP", 0);
+    loadBMP_custom("textures/1.BMP", 1);
+    loadBMP_custom("textures/2.BMP", 2);
+    loadBMP_custom("textures/3.BMP", 3);
+    loadBMP_custom("textures/4.BMP", 4);
+    loadBMP_custom("textures/5.BMP", 5);
+
     glEnable(GL_TEXTURE_2D);
 
     /* set the glut display callback function
@@ -262,12 +262,8 @@ int main(int argc, char** argv)
  */
 void display(void)
 {
-
-    /* clear the color buffer (resets everything to black) */
+    // clear the color buffer (resets everything to black)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    /* set the current drawing color to red */
-
 
     glLoadIdentity();
 
@@ -339,13 +335,76 @@ void display(void)
     glPopMatrix();
 
 
-        /* swap the back and front buffers so we can see what we just drew */
+    // swap the back and front buffers so we can see what we just drew
     glutSwapBuffers();
 
 //    float acc = 0.01f;
 //    vel += acc;
 
     glutPostRedisplay();
+
+
+	/*///From the studing book
+
+	GLfloat	xrot = 0.5f;			// Вращение X
+	GLfloat	yrot = 0.5f;			// Y
+	GLfloat	zrot = 0.5f;			// Z
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	glTranslatef(0.0f,0.0f,-5.0f);
+
+	glRotatef(xrot,1.0f,0.0f,0.0f);		// Вращение по оси X
+	glRotatef(yrot,0.0f,1.0f,0.0f);		// Вращение по оси Y
+	glRotatef(zrot,0.0f,0.0f,1.0f);		// Вращение по оси Z
+
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glBegin(GL_QUADS);
+
+					// Передняя грань
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Низ лево
+	glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Низ право
+	glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);	// Верх право
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Верх лево
+
+					// Задняя грань
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Низ право
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Верх право
+	glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Верх лево
+	glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Низ лево
+
+					// Верхняя грань
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Верх лево
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Низ лево
+	glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);	// Низ право
+	glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Верх право
+	
+					// Нижняя грань
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Верх право
+	glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Верх лево
+	glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Низ лево
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Низ право
+
+					// Правая грань
+	glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Низ право
+	glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Верх право
+	glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);	// Верх лево
+	glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Низ лево
+
+					// Левая грань
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Низ лево
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Низ право
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Верх право
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Верх лево
+
+	glEnd();
+
+
+	xrot+=0.3f;			// Ось вращения X
+	yrot+=0.2f;			// Ось вращения Y
+	zrot+=0.4f;			// Ось вращения Z
+	//*/
 }
 
 int powm(int n, int m)
@@ -378,6 +437,7 @@ void chunks(string is)
     glBegin(GL_QUADS);
     float tx = posses[0] - 0.5f;
     float ty = posses[1] - 1.5f;
+	float ty2 = posses[1] - 2.5f;
     float tz = posses[2] - 0.5f;
 
     for (int i = 0; i < wid; i++)
@@ -388,20 +448,28 @@ void chunks(string is)
                     float xbc = i+x*wid;
                     float ybc = j+y*hei;
                     float zbc = k+z*dee;
-                    if ((ty > ybc && ty - ybc < 1.0f) && (abs(xbc - tx) <= 0.5f) && (abs(zbc - tz) <= 0.5f)) // not to fall through blocks
+                    if ((ty > ybc && ty - ybc < 1.0f) && (absm(xbc - tx) <= 0.5f) && (absm(zbc - tz) <= 0.5f)) // not to fall through blocks
                         blocker[0] = true;
-                    if ((ty + 1.0f < ybc && ybc - (ty + 1.0f) < 1.0f) && (abs(xbc - tx) <= 0.5f) && (abs(zbc - tz) <= 0.5f)) // not to jump into the upper block
+                    if ((ty + 1.0f < ybc && ybc - (ty + 1.0f) < 1.0f) && (absm(xbc - tx) <= 0.5f) && (absm(zbc - tz) <= 0.5f)) // not to jump into the upper block
                         blocker[1] = true;
 
-                    if (((tx + 1.0f) > xbc && (tx + 1.0f) - xbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tz - zbc) < 0.55f))
+                    if (((tx + 1.0f) > xbc && (tx + 1.0f) - xbc < 1.0f) && (absm(ybc - ty - 1) < 1.0f) && (absm(tz - zbc) < 0.55f))
                         blocker[2] = true;
-                    if ((tx > xbc && tx - xbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tz - zbc) < 0.55f))
+                    if ((tx > xbc && tx - xbc < 1.0f) && (absm(ybc - ty - 1) < 1.0f) && (absm(tz - zbc) < 0.55f))
                         blocker[3] = true;
-
-                    if (((tz + 1.0f) > zbc && (tz + 1.0f) - zbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tx - xbc) < 0.55f))
+                    if (((tz + 1.0f) > zbc && (tz + 1.0f) - zbc < 1.0f) && (absm(ybc - ty - 1) < 1.0f) && (absm(tx - xbc) < 0.55f))
                         blocker[4] = true;
-                    if ((tz > zbc && tz - zbc < 1.0f) && (abs(ybc - ty - 1) < 1.0f) && (abs(tx - xbc) < 0.55f))
+                    if ((tz > zbc && tz - zbc < 1.0f) && (absm(ybc - ty - 1) < 1.0f) && (absm(tx - xbc) < 0.55f))
                         blocker[5] = true;
+
+                    if (((tx + 1.0f) > xbc && (tx + 1.0f) - xbc < 1.0f) && (absm(ybc - ty2 - 1) < 1.0f) && (absm(tz - zbc) < 0.55f))
+                        blocker[6] = true;
+                    if ((tx > xbc && tx - xbc < 1.0f) && (absm(ybc - ty2 - 1) < 1.0f) && (absm(tz - zbc) < 0.55f))
+                        blocker[7] = true;
+                    if (((tz + 1.0f) > zbc && (tz + 1.0f) - zbc < 1.0f) && (absm(ybc - ty - 1) < 1.0f) && (absm(tx - xbc) < 0.55f))
+                        blocker[8] = true;
+                    if ((tz > zbc && tz - zbc < 1.0f) && (absm(ybc - ty2 - 1) < 1.0f) && (absm(tx - xbc) < 0.55f))
+                        blocker[9] = true;
                     //chunk's borders drawing - BEGIN
                     //drawModel::cube(xbc, ybc, zbc);
                     if (bad(i-1, j, k))
@@ -435,12 +503,12 @@ void chunks(string is)
 }
 string getchunk(const char *fn)
 {
-    ifstream in;
+	#include <fstream> 
+    ifstream in;  // Поток in будем использовать для чтения
     in.open(fn);
-
-    string is;
-    in >> is;
-    in.close();
+	string is;
+	in >> is;
+	in.close();
     return is;
 }
 
