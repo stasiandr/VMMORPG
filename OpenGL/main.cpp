@@ -30,7 +30,7 @@ static HGLRC hRC;		// Постоянный контекст рендеринга
 static HDC hDC;			// Приватный контекст устройства GDI
 
 GLuint textures[6];
-unsigned char * data[6];
+unsigned char * datas[6];
 unsigned int widths[6];
 unsigned int heights[6];
 
@@ -39,10 +39,8 @@ void loadBMP_custom(const char * imagepath, int ind)
     // Данные, прочитанные из заголовка BMP-файла
     unsigned char header[54]; // Каждый BMP-файл начинается с заголовка, длиной в 54 байта
     unsigned int dataPos;     // Смещение данных в файле (позиция данных)
-    unsigned int width, height;
     unsigned int imageSize;   // Размер изображения = Ширина * Высота * 3
     // RGB-данные, полученные из файла
-    unsigned char * data;
     FILE * file = fopen(imagepath,"rb");
     if (!file) {
       cout << "1Изображение не может быть открыто\n";
@@ -57,38 +55,30 @@ void loadBMP_custom(const char * imagepath, int ind)
         return;
     }
     // Читаем необходимые данные
-    dataPos    = *(int*)&(header[0x0A]); // Смещение данных изображения в файле
-    imageSize  = *(int*)&(header[0x22]); // Размер изображения в байтах
-    width      = *(int*)&(header[0x12]); // Ширина
-    height     = *(int*)&(header[0x16]); // Высота
+    dataPos      = *(int*)&(header[0x0A]); // Смещение данных изображения в файле
+    imageSize    = *(int*)&(header[0x22]); // Размер изображения в байтах
+    widths[ind]  = *(int*)&(header[0x12]); // Ширина
+    heights[ind] = *(int*)&(header[0x16]); // Высота
     // Некоторые BMP-файлы имеют нулевые поля imageSize и dataPos, поэтому исправим их
-    if (imageSize==0)    imageSize=width*height*3; // Ширину * Высоту * 3, где 3 - 3 компоненты цвета (RGB)
+    if (imageSize==0)    imageSize=widths[ind]*heights[ind]*3; // Ширину * Высоту * 3, где 3 - 3 компоненты цвета (RGB)
     if (dataPos==0)      dataPos=54; // В таком случае, данные будут следовать сразу за заголовком
     // Создаем буфер
-    data = new unsigned char [imageSize];
+    datas[ind] = new unsigned char [imageSize];
 
     // Считываем данные из файла в буфер
-    fread(data,1,imageSize,file);
+    fread(datas[ind],1,imageSize,file);
 
     // Закрываем файл, так как больше он нам не нужен
     fclose(file);
 
-    // Создадим одну текстуру OpenGL
     glGenTextures(1, &textures[ind]);
 
-	datas[ind] = data;
-	widths[ind] = width;
-	heights[ind] = height;
-
-	/*
     // Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
     glBindTexture(GL_TEXTURE_2D, textures[ind]);
-
     // Передадим изображение OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, datas[ind]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);*/
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
 void Update();
@@ -164,6 +154,15 @@ bool bad(int i, int j, int k)
 }
 void Update()
 {
+    if (!(color))
+    {
+        loadBMP_custom("textures/0.BMP", 0);
+        loadBMP_custom("textures/1.BMP", 1);
+        loadBMP_custom("textures/2.BMP", 2);
+        loadBMP_custom("textures/3.BMP", 3);
+        loadBMP_custom("textures/4.BMP", 4);
+        loadBMP_custom("textures/5.BMP", 5);
+    }
     for(int i = 0; i < n_c; ++i)
         iss[i] = getchunk(fns[i]);
 }
@@ -192,8 +191,6 @@ int main(int argc, char** argv)
                 fns[i*4*4 + j*4 + k][14] = 0;
             }
 
-    Update();
-
     glutInit(&argc, argv);
 
     /* set the window size to 512 x 512 */
@@ -208,12 +205,7 @@ int main(int argc, char** argv)
     /* create the window (and call it Lab 1) */
     glutCreateWindow("Lab 1");
 
-    loadBMP_custom("textures/0.BMP", 0);
-    loadBMP_custom("textures/1.BMP", 1);
-    loadBMP_custom("textures/2.BMP", 2);
-    loadBMP_custom("textures/3.BMP", 3);
-    loadBMP_custom("textures/4.BMP", 4);
-    loadBMP_custom("textures/5.BMP", 5);
+    Update();
 
     glEnable(GL_TEXTURE_2D);
 
@@ -371,7 +363,8 @@ void chunks(string is)
     //cout << x << y << z << endl;
     glPushMatrix();
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
+    if (color)
+        glBegin(GL_QUADS);
     float tx = posses[0] - 0.5f;
     float ty = posses[1] - 1.5f;
 	float ty2 = posses[1] - 2.5f;
@@ -435,12 +428,12 @@ void chunks(string is)
                     if (is[i*wid*dee + j*dee + k+1 + de] == '0')
                         drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, 0.0f, 0.0f, 1.0f);
                 }
-
-    glEnd();
+    if (color)
+        glEnd();
 }
 string getchunk(const char *fn)
 {
-	#include <fstream> 
+	#include <fstream>
     ifstream in;  // Поток in будем использовать для чтения
     in.open(fn);
 	string is;
