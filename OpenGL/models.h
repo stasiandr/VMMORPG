@@ -14,12 +14,12 @@
 class drawModel {
 public:
     static void cube(float, float, float);
-    static void plain_top (float, float, float, float, float, float, float, float);
-    static void plain_side (float, float, float, float, float, float, float, float);
-    static void plain_front (float, float, float, float, float, float, float, float);
-    static void plain_top_reversed (float, float, float, float, float, float, float, float);
-    static void plain_side_reversed (float, float, float, float, float, float, float, float);
-    static void plain_front_reversed (float, float, float, float, float, float, float, float);
+    static void plain_top (float, float, float, float, float, float, float, float, int);
+    static void plain_side (float, float, float, float, float, float, float, float, int);
+    static void plain_front (float, float, float, float, float, float, float, float, int);
+    static void plain_top_reversed (float, float, float, float, float, float, float, float, int);
+    static void plain_side_reversed (float, float, float, float, float, float, float, float, int);
+    static void plain_front_reversed (float, float, float, float, float, float, float, float, int);
 
 };
 
@@ -66,7 +66,7 @@ void drawModel::cube(float pos_x, float pos_y, float pos_z)
 
 bool color = false;
 
-void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 0)
 {
 	if (color)
 	{
@@ -94,7 +94,7 @@ void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, floa
 	}
 }
 
- void drawModel::plain_side (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+ void drawModel::plain_side (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 0)
 {
 	if (color)
 	{
@@ -106,6 +106,15 @@ void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, floa
 	}
 	else
 	{
+		// Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
+		glBindTexture(GL_TEXTURE_2D, textures[ind]);
+
+		// Передадим изображение OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
 		glTexCoord2f(y1, z1); glVertex3f(x, y1, z1);
 	    glTexCoord2f(y1, z2); glVertex3f(x, y1, z2);
@@ -113,7 +122,7 @@ void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, floa
 	    glTexCoord2f(y2, z1); glVertex3f(x, y2, z1);
 	}
 }
-void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 =1.0f, float c3 = 1.0f)
+void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 =1.0f, float c3 = 1.0f, int ind = 0)
 {
 	if (color)
 	{
@@ -125,6 +134,15 @@ void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, fl
 	}
 	else
 	{
+		// Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
+		glBindTexture(GL_TEXTURE_2D, textures[ind]);
+
+		// Передадим изображение OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
 		glTexCoord2f(x1, y1); glVertex3f(x1, y1, z);
 	    glTexCoord2f(x1, y2); glVertex3f(x1, y2, z);
@@ -134,7 +152,7 @@ void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, fl
 }
 
 
-void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 0)
 {
 	if (color)
 	{
@@ -146,6 +164,15 @@ void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, floa
 	}
 	else
 	{
+		// Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
+		glBindTexture(GL_TEXTURE_2D, textures[ind]);
+
+		// Передадим изображение OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
 		glTexCoord2f(x2, z1); glVertex3f(x2, y, z1);
 	    glTexCoord2f(x2, z2); glVertex3f(x2, y, z2);
@@ -154,7 +181,7 @@ void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, floa
 	}
 }
 
-void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 0)
 {
 	if (color)
 	{
@@ -166,6 +193,15 @@ void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, flo
 	}
 	else
 	{
+		// Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
+		glBindTexture(GL_TEXTURE_2D, textures[ind]);
+
+		// Передадим изображение OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
 		glTexCoord2f(y2, z1); glVertex3f(x, y2, z1);
 	    glTexCoord2f(y2, z2); glVertex3f(x, y2, z2);
@@ -173,7 +209,7 @@ void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, flo
 	    glTexCoord2f(y1, z1); glVertex3f(x, y1, z1);
 	}
 }
-void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f)
+void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 0)
 {
 	if (color)
 	{
@@ -185,6 +221,15 @@ void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, fl
 	}
 	else
 	{
+		// Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
+		glBindTexture(GL_TEXTURE_2D, textures[ind]);
+
+		// Передадим изображение OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
 		glTexCoord2f(x2, y1); glVertex3f(x2, y1, z);
 	    glTexCoord2f(x2, y2); glVertex3f(x2, y2, z);
