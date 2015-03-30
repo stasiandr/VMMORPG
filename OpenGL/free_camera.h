@@ -14,8 +14,11 @@
 
 // Camer Stuff --------
 
-float Moveconst = 0.5f;
-float MoveconstY = 0.2f;
+float Moveconst = 2.5f;
+float MoveconstY = 3.5f;
+
+short Movingw = 0;
+short Movinga = 0;
 
 float angle = 0.0f;
 float Yangle = 0.0f;
@@ -24,7 +27,7 @@ float Yangle = 0.0f;
 float lx=0.0f,lz=1.0f, ly=0.0f;
 
 // XZ position of the camera
-float x=20.0f, z=20.0f, y=10.0f;
+float x=4.0f, z=4.0f, y=200.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -58,12 +61,12 @@ void grswt()
     if(gravity)
 	{
         gravity = false;
-		MoveconstY = 2.5f;
+		MoveconstY = 1.0f;
 	}
     else
 	{
         gravity = true;
-		MoveconstY = 0.2f;
+		MoveconstY = 0.7f;
 	}
 }
 
@@ -81,25 +84,52 @@ float * computePos(float deltaMove, float deltaMove_Sides, float deltaMove_Y)
     return m;
 }
 
+void Moving()
+{
+    deltaMove = 0; deltaMove_Sides = 0;
+    if (Movingw != 0)
+    {
+        deltaMove += Moveconst * Movingw * lx;
+        deltaMove_Sides += Moveconst * Movingw * lz;
+    }
+    if (Movinga != 0)
+    {
+        deltaMove_Sides += Moveconst * Movinga * Slz;
+        deltaMove += Moveconst * Movinga * Slx;
+    }
+}
+
 void processNormalKeys(unsigned char key, int xx, int yy) {
 
     if (key == 27)
         exit(0);
 
+    float lc = 1.0f;
     switch (key) {
+        case '1' : dist += 1; break;
+        case '2' : dist -= 1; break;
+        case '=' : gfe += 100.0f; break;
+        case '-' : gfe -= 100.0f; break;
+        case '+' : gfs += 100.0f; break;
+        case '_' : gfs -= 100.0f; break;
+        case 'i' : lpy += lc; break;
+        case 'j' : lpx += lc; break;
+        case 'k' : lpy -= lc; break;
+        case 'l' : lpx -= lc; break;
+        case 'u' : lpz += lc; break;
+        case 'o' : lpz -= lc; break;
+        case 't' : circle = !circle; break;
+        case 'r' : FOG_is = !FOG_is; break;
+        case 'e' : blend = !blend; break;
+        case 'c' : light = !light; break;
+        case 'x' : color = !color; glColor3f(1.0f, 1.0f, 1.0f); break;
         case 'g' : grswt(); deltaMove_Y = 0; break;
-        case 'i' : cout << "an: " << angle << " Yan: " << Yangle << " x: " << x << " y: " << y << " z: " << z << endl; break;
+        case 'y' : cout << "an: " << angle << " Yan: " << Yangle << " x: " << x << " y: " << y << " z: " << z << endl; break;
         case 'f' : Update(); break;
-        case 'q' : for (int i = 0; i < 1; ++i)
-                    {
-                        mouseButton(GLUT_LEFT_BUTTON, GLUT_UP, -1, -1);
-                        raycast(x, y, z, angle, Yangle);
-                    }
-                    break;
-        case 'w' : deltaMove += Moveconst * lx; deltaMove_Sides += Moveconst * lz; break;
-        case 's' : deltaMove += -Moveconst * lx; deltaMove_Sides += -Moveconst * lz; break;
-        case 'd' : deltaMove_Sides += Moveconst * Slz; deltaMove += Moveconst * Slx; break;
-        case 'a' : deltaMove_Sides += -Moveconst * Slz; deltaMove += -Moveconst * Slx; break;
+        case 'w' : Movingw = 1; Moving(); break;
+        case 's' : Movingw = -1;  Moving(); break;
+        case 'd' : Movinga = 1; Moving(); break;
+        case 'a' : Movinga = -1;  Moving(); break;
         case ' ' : deltaMove_Y += MoveconstY; break;
     }
     if (!(gravity))
@@ -109,10 +139,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 
 void processNormalKeysRelease(unsigned char key, int xx, int yy) {
     switch (key) {
-        case 'w' :
-        case 's' :
-        case 'd' :
-        case 'a' : deltaMove = 0; deltaMove_Sides = 0; break;
+        case 'w' : if (Movingw == 1) Movingw = 0; Moving(); break;
+        case 's' : if (Movingw == -1) Movingw = 0; Moving(); break;
+        case 'd' : if (Movinga == 1) Movinga = 0; Moving(); break;
+        case 'a' : if (Movinga == -1) Movinga = 0; Moving(); break;
         case ' ' : break;
     }
     if (!(gravity))
@@ -143,6 +173,7 @@ void mouseMove(int x, int y) {
 
     // this will only be true when the left button is down
     if (xOrigin >= 0) {
+        Moving();
 
         YdeltaAngle = (y - yOrigin) * -0.01f;
 
