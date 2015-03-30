@@ -23,18 +23,50 @@
 #include <fstream>
 #include <math.h>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 static HGLRC hRC;		// Постоянный контекст рендеринга
 static HDC hDC;			// Приватный контекст устройства GDI
 
-GLuint textures[6];
-unsigned char * datas[6];
-unsigned int widths[6];
-unsigned int heights[6];
+bool FOG_is = false;
 
-void loadBMP_custom(const char * imagepath, int ind)
+float gfs = 1.0f;
+float gfe = 5.0f;
+
+bool blend = true;
+bool light = true;
+bool circle = false;
+
+struct blend_plain
+{
+    float tex[4][2];
+    float ver[4][3];
+    int tex_t;
+    int tex_ind;
+};
+
+vector<blend_plain> GL_BLEND_BUFFER_BIT;
+
+// Задаем параметры освещения
+GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
+GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat LightPosition[]={ 0.0f, 0.0f, 2.0f, 1.0f };
+
+float lpx = 200.0f;
+float lpy = 0.0f;
+float lpz = 200.0f;
+
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);    // Декларация WndProc
+
+const int num_tex = 10;
+GLuint textures[num_tex][6];
+unsigned char * datas[num_tex][6];
+unsigned int widths[num_tex][6];
+unsigned int heights[num_tex][6];
+
+void loadBMP_custom(const char * imagepath, int ind, int t)
 {
     // Данные, прочитанные из заголовка BMP-файла
     unsigned char header[54]; // Каждый BMP-файл начинается с заголовка, длиной в 54 байта
@@ -57,28 +89,28 @@ void loadBMP_custom(const char * imagepath, int ind)
     // Читаем необходимые данные
     dataPos      = *(int*)&(header[0x0A]); // Смещение данных изображения в файле
     imageSize    = *(int*)&(header[0x22]); // Размер изображения в байтах
-    widths[ind]  = *(int*)&(header[0x12]); // Ширина
-    heights[ind] = *(int*)&(header[0x16]); // Высота
+    widths[t][ind]  = *(int*)&(header[0x12]); // Ширина
+    heights[t][ind] = *(int*)&(header[0x16]); // Высота
     // Некоторые BMP-файлы имеют нулевые поля imageSize и dataPos, поэтому исправим их
-    if (imageSize==0)    imageSize=widths[ind]*heights[ind]*3; // Ширину * Высоту * 3, где 3 - 3 компоненты цвета (RGB)
+    if (imageSize==0)    imageSize=widths[t][ind]*heights[t][ind]*3; // Ширину * Высоту * 3, где 3 - 3 компоненты цвета (RGB)
     if (dataPos==0)      dataPos=54; // В таком случае, данные будут следовать сразу за заголовком
     // Создаем буфер
-    datas[ind] = new unsigned char [imageSize];
+    datas[t][ind] = new unsigned char [imageSize];
 
     // Считываем данные из файла в буфер
-    fread(datas[ind],1,imageSize,file);
+    fread(datas[t][ind],1,imageSize,file);
 
     // Закрываем файл, так как больше он нам не нужен
     fclose(file);
 
-    glGenTextures(1, &textures[ind]);
+    glGenTextures(1, &textures[t][ind]);
 
     // Сделаем созданную текстуру текущий, таким образом все следующие функции будут работать именно с этой текстурой
-    glBindTexture(GL_TEXTURE_2D, textures[ind]);
+    glBindTexture(GL_TEXTURE_2D, textures[t][ind]);
     // Передадим изображение OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widths[ind], heights[ind], 0, GL_RGB, GL_UNSIGNED_BYTE, datas[ind]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widths[t][ind], heights[t][ind], 0, GL_RGB, GL_UNSIGNED_BYTE, datas[t][ind]);
 }
 
 void Update();
@@ -90,11 +122,14 @@ void chunks(string);
 /*Getting one chunk-string function*/
 string getchunk(const char *);
 
-int wid = 6;
-int hei = 6;
-int dee = 6;
+int wid = 16;
+int hei = 16;
+int dee = 16;
 
 float * posses;
+
+int dist = 2;
+
 float st[3];
 bool blocker [10];
 
@@ -106,9 +141,7 @@ void display(void);
 /*! GLUT window reshape callback function */
 void reshape(int, int);
 
-const int n_c = 64;
-char fns[n_c][15];
-string iss[n_c];
+float tx , ty, ty2, tz;
 
 struct block
 {
@@ -117,25 +150,32 @@ struct block
 };
 
 bool IsFull(int x, int y, int z);
-block raycast(float x, float y, float z, float an, float yan);
+//block raycast(float x, float y, float z, float an, float yan);
 
 bool gravity = false;
 
-#include "raycast.h"
+bool color = false;
+
+//#include "raycast.h"
 #include "free_camera.h"
 #include "models.h"
 
-bool IsFull(int x, int y, int z)
+char name[15];
+
+void getname(int i, int j, int k)
 {
-    int tex, tey, tez;
-    tex = x % 6;
-    tey = y % 6;
-    tez = z % 6;
-    int ch = (int)(x / 6)*4 + (int)(y / 6);
-    if (iss[ch][tex*hei*dee + tey*dee + tez + 12] == '1')
-        return true;
-    else if (iss[ch][tex*hei*dee + tey*dee + tez + 12] == '0')
-        return false;
+    string path;
+    string path1 = "chunks/";
+    string path2 = ".VMC";
+    path = (char)(i + '0');
+    path += (char)(j + '0');
+    path += (char)(k + '0');
+    string fullpath = path1;
+    fullpath += path;
+    fullpath += path2;
+    for (int e = 0; e < 14; ++e)
+        name[e] = fullpath[e];
+    name[14] = 0;
 }
 float absm(float etwas)
 {
@@ -156,40 +196,35 @@ void Update()
 {
     if (!(color))
     {
-        loadBMP_custom("textures/0.BMP", 0);
-        loadBMP_custom("textures/1.BMP", 1);
-        loadBMP_custom("textures/2.BMP", 2);
-        loadBMP_custom("textures/3.BMP", 3);
-        loadBMP_custom("textures/4.BMP", 4);
-        loadBMP_custom("textures/5.BMP", 5);
-    }
-    for(int i = 0; i < n_c; ++i)
-        iss[i] = getchunk(fns[i]);
-}
-int main(int argc, char** argv)
-{
-    string path1 = "chunks/";
-    string path2 = ".VMC";
-    st[0] = 20.0f;
-    st[1] = 10.0f;
-    st[2] = 20.0f;
-    posses = st;
-
-    for (int i = 0; i < 4; ++i)
-        for (int j = 0; j < 4; ++j)
-            for (int k = 0; k < 4; ++k)
+        string path1 = "textures/";
+        string pathend = ".bmp";
+        for (int i = 0; i < num_tex; ++i)
+        {
+            for (int j = 0; j < 6; ++j)
             {
                 string path;
                 path = (char)(i + '0');
+                path += "/";
                 path += (char)(j + '0');
-                path += (char)(k + '0');
                 string fullpath = path1;
-				fullpath += path;
-				fullpath += path2;
-                for (int e = 0; e < 14; ++e)
-                    fns[i*4*4 + j*4 + k][e] = fullpath[e];
-                fns[i*4*4 + j*4 + k][14] = 0;
+                fullpath += path;
+                fullpath += pathend;
+                char name[17];
+                for (int e = 0; e < 16; ++e)
+                    name[e] = fullpath[e];
+                name[16] = 0;
+                cout << name << endl;
+                loadBMP_custom(name, j, i);
             }
+        }
+    }
+}
+int main(int argc, char** argv)
+{
+    st[0] = 4.0f;
+    st[1] = 200.0f;
+    st[2] = 4.0f;
+    posses = st;
 
     glutInit(&argc, argv);
 
@@ -208,6 +243,20 @@ int main(int argc, char** argv)
     Update();
 
     glEnable(GL_TEXTURE_2D);
+    glShadeModel(GL_SMOOTH);      // Разрешение сглаженного закрашивания
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f); // Черный фон
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Улучшенные вычисления перспективы
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);    // Установка Фонового Света
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);    // Установка Диффузного Света
+    glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);   // Позиция света
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1); // Разрешение источника света номер один
+
+    glEnable(GL_DEPTH_TEST);
+    glColor4f(1.0f, 1.0f, 1.0f, 0.5f);   // Полная яркость, 50% альфа (НОВОЕ)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Функция смешивания для непрозрачности,
+                                  // базирующаяся на значении альфы(НОВОЕ)
 
     /* set the glut display callback function
      this is the function GLUT will call every time
@@ -254,13 +303,41 @@ int main(int argc, char** argv)
  */
 void display(void)
 {
+    LightPosition[0] = lpx;
+    LightPosition[1] = lpy;
+    LightPosition[2] = lpz;
+
+    glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);   // Позиция света
+
+    if (!light)               // Если не свет
+    {
+        glDisable(GL_LIGHTING);  // Запрет освещения
+    }
+    else                      // В противном случае
+    {
+        glEnable(GL_LIGHTING);   // Разрешить освещение
+    }
+    if (FOG_is)
+    {
+        GLfloat fogColor[4] = {0.8f, 0.8f, 0.8f, 1.0f}; // Цвет тумана
+        glClearColor(fogColor[0], fogColor[1], fogColor[2], fogColor[3]);      // Будем очищать экран, заполняя его цветом тумана. ( Изменено
+        glEnable(GL_FOG);                       // Включает туман (GL_FOG)
+        glFogi(GL_FOG_MODE, GL_EXP2);// Выбираем тип тумана
+        glFogfv(GL_FOG_COLOR, fogColor);        // Устанавливаем цвет тумана
+        glFogf(GL_FOG_DENSITY, 0.15f);          // Насколько густым будет туман
+        glHint(GL_FOG_HINT, GL_FASTEST);      // Вспомогательная установка тумана GL_NICEST or GL_DONT_CARE or GL_FASTEST
+        glFogf(GL_FOG_START, gfs);             // Глубина, с которой начинается туман
+        glFogf(GL_FOG_END, gfe);               // Глубина, где туман заканчивается.
+    }
+    else
+    {
+        glClearColor(0.4f, 0.8f, 0.8f, 1.0f);
+        glDisable(GL_FOG);
+    }
     // clear the color buffer (resets everything to black)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
 
     glTranslatef(0.0f, 0.0f,0.0f);
 
@@ -270,11 +347,36 @@ void display(void)
 
     //---
 
-    for(int i = 0; i < n_c; ++i)
-        chunks(iss[i]);
+    tx = x - 0.5f;
+    ty = y - 1.5f;
+	ty2 = y - 2.5f;
+    tz = z - 0.5f;
+
+    int ch_min_x = (tx - dist)/wid;
+    int ch_max_x = (tx + dist)/wid + 1;
+
+    int ch_min_y = (ty - dist)/hei;
+    int ch_max_y = (ty + dist)/hei + 1;
+
+    int ch_min_z = (tz - dist)/dee;
+    int ch_max_z = (tz+ dist)/dee + 1;
+
+    if (ch_min_x < 0) ch_min_x = 0;
+    if (ch_min_y < 0) ch_min_y = 0;
+    if (ch_min_z < 0) ch_min_z = 0;
+
+    for (int i = ch_min_x; i < ch_max_x; ++i)
+        for (int j = ch_min_y; j < ch_max_y; ++j)
+            for (int k = ch_min_z; k < ch_max_z; ++k)
+            {
+                getname(i, j, k);
+                string cancer = getchunk(name);
+                if (cancer != "IDITE NAFIG!")
+                    chunks(cancer);
+            }
 
     if (gravity)
-        deltaMove_Y -= 0.017f;
+        deltaMove_Y -= 0.027f;
 
     float reserveDeltaMove = deltaMove;
     float reserveDeltaMove_Sides = deltaMove_Sides;
@@ -310,8 +412,11 @@ void display(void)
     glPopMatrix();
 
     glPushMatrix();
+
+    glDisable(GL_TEXTURE_2D);
     glBegin(GL_LINES);
-    glColor3f(1, 1, 1);
+
+    //glColor3f(1, 1, 1);
 
     glVertex3f(-1000, 0, 0);
     glVertex3f(1000, 0, 0);
@@ -323,6 +428,7 @@ void display(void)
     glVertex3f(0, 0, 20);
 
     glEnd();
+    glEnable(GL_TEXTURE_2D);
 
     glPopMatrix();
 
@@ -365,19 +471,21 @@ void chunks(string is)
     glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     if (color)
         glBegin(GL_QUADS);
-    float tx = posses[0] - 0.5f;
-    float ty = posses[1] - 1.5f;
-	float ty2 = posses[1] - 2.5f;
-    float tz = posses[2] - 0.5f;
 
     for (int i = 0; i < wid; i++)
         for (int j = 0; j < hei; j++)
             for (int k = 0; k < dee; k++)
-                if (is[i*hei*dee + j*dee + k + de] == '1')
+                if (is[i*hei*dee + j*dee + k + de] != '0')
                 {
+                    char tem = is[i*hei*dee + j*dee + k + de];
                     float xbc = i+x*wid;
                     float ybc = j+y*hei;
                     float zbc = k+z*dee;
+
+                    if (circle)
+                        if ((xbc-tx)*(xbc-tx) + (ybc-ty)*(ybc-ty) + (zbc-tz)*(zbc-tz) > (dist+2)*(dist+2))
+                            continue;
+
                     if ((ty > ybc && ty - ybc < 1.0f) && (absm(xbc - tx) <= 0.5f) && (absm(zbc - tz) <= 0.5f)) // not to fall through blocks
                         blocker[0] = true;
                     if ((ty + 1.0f < ybc && ybc - (ty + 1.0f) < 1.0f) && (absm(xbc - tx) <= 0.5f) && (absm(zbc - tz) <= 0.5f)) // not to jump into the upper block
@@ -403,39 +511,74 @@ void chunks(string is)
                     //chunk's borders drawing - BEGIN
                     //drawModel::cube(xbc, ybc, zbc);
                     if (bad(i-1, j, k))
-                        drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, 1.0f, 0.0f, 0.0f);
+                        drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, tem, 1.0f, 0.0f, 0.0f);
+                    else if (is[(i-1)*wid*dee + j*dee + k + de] == '0' or is[(i-1)*wid*dee + j*dee + k + de] == ':')
+                        drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, tem, 1.0f, 0.0f, 0.0f);
                     if (bad(i+1, j, k))
-                        drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, 1.0f, 0.0f, 1.0f);
+                        drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, tem, 1.0f, 0.0f, 1.0f);
+                    else if (is[(i+1)*wid*dee + j*dee + k + de] == '0' or is[(i+1)*wid*dee + j*dee + k + de] == ':')
+                        drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, tem, 1.0f, 0.0f, 1.0f);
                     if (bad(i, j-1, k))
-                        drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, 1.0f, 1.0f, 0.0f);
+                        drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, tem, 1.0f, 1.0f, 0.0f);
+                    else if (is[i*wid*dee + (j-1)*dee + k + de] == '0' or is[i*wid*dee + (j-1)*dee + k + de] == ':')
+                        drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, tem, 1.0f, 1.0f, 0.0f);
                     if (bad(i, j+1, k))
-                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, 0.0f, 1.0f, 0.0f);
+                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, tem, 0.0f, 1.0f, 0.0f);
+                    else if (is[i*wid*dee + (j+1)*dee + k + de] == '0' or is[i*wid*dee + (j+1)*dee + k + de] == ':')
+                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, tem, 0.0f, 1.0f, 0.0f);
                     if (bad(i, j, k-1))
-                        drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, 0.0f, 1.0f, 1.0f);
+                        drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, tem, 0.0f, 1.0f, 1.0f);
+                    else if (is[i*wid*dee + j*dee + k-1 + de] == '0' or is[i*wid*dee + j*dee + k-1 + de] == ':')
+                        drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, tem, 0.0f, 1.0f, 1.0f);
                     if (bad(i, j, k+1))
-                        drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, 0.0f, 0.0f, 1.0f);
+                        drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, tem, 0.0f, 0.0f, 1.0f);
+                    else if (is[i*wid*dee + j*dee + k+1 + de] == '0' or is[i*wid*dee + j*dee + k+1 + de] == ':')
+                        drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, tem, 0.0f, 0.0f, 1.0f);
                     // chunk's borders drawing - END
-                    if (is[(i-1)*wid*dee + j*dee + k + de] == '0')
-                        drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, 1.0f, 0.0f, 0.0f);
-                    if (is[(i+1)*wid*dee + j*dee + k + de] == '0')
-                        drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, 1.0f, 0.0f, 1.0f);
-                    if (is[i*wid*dee + (j-1)*dee + k + de] == '0')
-                        drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, 1.0f, 1.0f, 0.0f);
-                    if (is[i*wid*dee + (j+1)*dee + k + de] == '0')
-                        drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, 0.0f, 1.0f, 0.0f);
-                    if (is[i*wid*dee + j*dee + k-1 + de] == '0')
-                        drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, 0.0f, 1.0f, 1.0f);
-                    if (is[i*wid*dee + j*dee + k+1 + de] == '0')
-                        drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, 0.0f, 0.0f, 1.0f);
+                    /*int inde = (i-1)*wid*dee + j*dee + k + de;
+                    cout << i << " " << j << " " << k << " " << de << endl;
+                    cout << inde << endl;
+                    cout << is.size() << endl;
+                    cout << is[inde] << endl;*/
                 }
+    if (GL_BLEND_BUFFER_BIT.size() < 1)
+    {
+        if(color)
+            glEnd();
+        return;
+    }
+    //cout << GL_BLEND_BUFFER_BIT.size() << endl;
+    for (int i = 0; i < 108; ++i)
+    {
+        //glEnable(GL_BLEND);        // Включаем смешивание
+        //glDisable(GL_DEPTH_TEST);  // Выключаем тест глубины
+        //glDepthMask(false);
+        blend_plain temp = GL_BLEND_BUFFER_BIT[i];
+        glBindTexture(GL_TEXTURE_2D, textures[temp.tex_t][temp.tex_ind]);
+
+        glBegin(GL_QUADS);
+        for (int n = 0; n < 4; ++n)
+        {
+            glTexCoord2f(temp.tex[n][0], temp.tex[n][1]);
+            glVertex3f(temp.ver[n][0], temp.ver[n][1], temp.ver[n][2]);
+        }
+        glEnd();
+        //glDepthMask(true);
+        //glDisable(GL_BLEND);        // Выключаем смешивание
+        //glEnable(GL_DEPTH_TEST);
+    }
+    GL_BLEND_BUFFER_BIT.clear();
+
+
     if (color)
         glEnd();
 }
 string getchunk(const char *fn)
 {
-	#include <fstream>
     ifstream in;  // Поток in будем использовать для чтения
     in.open(fn);
+    if (in == 0)
+        return "IDITE NAFIG!";
 	string is;
 	in >> is;
 	in.close();
