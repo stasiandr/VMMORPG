@@ -106,6 +106,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 
     float lc = 1.0f;
     switch (key) {
+	case '3' : AZAZA.Change_ang(-100); cout << "a-"; break;
+	case '4' : AZAZA.Change_ang(+100); cout << "a+"; break;
+	case '5' : AZAZA.Change_r(-100); cout << "r-"; break;
+	case '6' : AZAZA.Change_r(+100); cout << "r+"; break;
         case '1' : dist += 1; break;
         case '2' : dist -= 1; break;
         case '=' : gfe += 100.0f; break;
