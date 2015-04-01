@@ -23,48 +23,60 @@ public:
 
 };
 
+//
+//  mob.h
+//  OpenGL
+//
+//  Created by Irina on 30/03/15.
+//  Copyright (c) 2014 Argon Team. All rights reserved.
+//
+
+#ifndef OpenGL_mob_h
+#define OpenGL_mob_h
+
+#endif
 
 void drawModel::cube(float pos_x, float pos_y, float pos_z)
 {
-    glColor3f(0.0f,1.0f,0.0f);              // Зеленый
-    glVertex3f( 1.0f + pos_x, 1.0f + pos_y,-1.0f + pos_z);          // Право верх квадрата (Верх)
-    glVertex3f(-1.0f + pos_x, 1.0f + pos_y,-1.0f + pos_z);          // Лево верх
-    glVertex3f(-1.0f + pos_x, 1.0f + pos_y, 1.0f + pos_z);          // Лево низ
-    glVertex3f( 1.0f + pos_x, 1.0f + pos_y, 1.0f + pos_z);          // Право низ
+    glColor3f(0.0,1.0,0.0);              // Зеленый
+    glVertex3f( 1.0 + pos_x, 1.0 + pos_y,-1.0 + pos_z);          // Право верх квадрата (Верх)
+    glVertex3f(-1.0 + pos_x, 1.0 + pos_y,-1.0 + pos_z);          // Лево верх
+    glVertex3f(-1.0 + pos_x, 1.0 + pos_y, 1.0 + pos_z);          // Лево низ
+    glVertex3f( 1.0 + pos_x, 1.0 + pos_y, 1.0 + pos_z);          // Право низ
 
-    glColor3f(1.0f,0.5f,0.0f);              // Оранжевый
-    glVertex3f( 1.0f + pos_x,-1.0f + pos_y, 1.0f + pos_z);          // Верх право квадрата (Низ)
-    glVertex3f(-1.0f + pos_x,-1.0f + pos_y, 1.0f + pos_z);          // Верх лево
-    glVertex3f(-1.0f + pos_x,-1.0f + pos_y,-1.0f + pos_z);          // Низ лево
-    glVertex3f( 1.0f + pos_x,-1.0f + pos_y,-1.0f + pos_z);          // Низ право
+    glColor3f(1.0,0.5f,0.0);              // Оранжевый
+    glVertex3f( 1.0 + pos_x,-1.0 + pos_y, 1.0 + pos_z);          // Верх право квадрата (Низ)
+    glVertex3f(-1.0 + pos_x,-1.0 + pos_y, 1.0 + pos_z);          // Верх лево
+    glVertex3f(-1.0 + pos_x,-1.0 + pos_y,-1.0 + pos_z);          // Низ лево
+    glVertex3f( 1.0 + pos_x,-1.0 + pos_y,-1.0 + pos_z);          // Низ право
 
-    glColor3f(1.0f,0.0f,0.0f);              // Красный
-    glVertex3f( 1.0f + pos_x, 1.0f + pos_y, 1.0f + pos_z);          // Верх право квадрата (Перед)
-    glVertex3f(-1.0f + pos_x, 1.0f + pos_y, 1.0f + pos_z);          // Верх лево
-    glVertex3f(-1.0f + pos_x,-1.0f + pos_y, 1.0f + pos_z);          // Низ лево
-    glVertex3f( 1.0f + pos_x,-1.0f + pos_y, 1.0f + pos_z);          // Низ право
+    glColor3f(1.0,0.0,0.0);              // Красный
+    glVertex3f( 1.0 + pos_x, 1.0 + pos_y, 1.0 + pos_z);          // Верх право квадрата (Перед)
+    glVertex3f(-1.0 + pos_x, 1.0 + pos_y, 1.0 + pos_z);          // Верх лево
+    glVertex3f(-1.0 + pos_x,-1.0 + pos_y, 1.0 + pos_z);          // Низ лево
+    glVertex3f( 1.0 + pos_x,-1.0 + pos_y, 1.0 + pos_z);          // Низ право
 
-    glColor3f(1.0f,0.7f,0.3f);              // Желтый
-    glVertex3f( 1.0f + pos_x,-1.0f + pos_y,-1.0f + pos_z);          // Верх право квадрата (Зад)
-    glVertex3f(-1.0f + pos_x,-1.0f + pos_y,-1.0f + pos_z);          // Верх лево
-    glVertex3f(-1.0f + pos_x, 1.0f + pos_y,-1.0f + pos_z);          // Низ лево
-    glVertex3f( 1.0f + pos_x, 1.0f + pos_y,-1.0f + pos_z);          // Низ право
+    glColor3f(1.0,0.7f,0.3f);              // Желтый
+    glVertex3f( 1.0 + pos_x,-1.0 + pos_y,-1.0 + pos_z);          // Верх право квадрата (Зад)
+    glVertex3f(-1.0 + pos_x,-1.0 + pos_y,-1.0 + pos_z);          // Верх лево
+    glVertex3f(-1.0 + pos_x, 1.0 + pos_y,-1.0 + pos_z);          // Низ лево
+    glVertex3f( 1.0 + pos_x, 1.0 + pos_y,-1.0 + pos_z);          // Низ право
 
-    glColor3f(0.0f,0.0f,1.0f);              // Синий
-    glVertex3f(-1.0f + pos_x, 1.0f + pos_y, 1.0f + pos_z);          // Верх право квадрата (Лево)
-    glVertex3f(-1.0f + pos_x, 1.0f + pos_y,-1.0f + pos_z);          // Верх лево
-    glVertex3f(-1.0f + pos_x,-1.0f + pos_y,-1.0f + pos_z);          // Низ лево
-    glVertex3f(-1.0f + pos_x,-1.0f + pos_y, 1.0f + pos_z);          // Низ право
+    glColor3f(0.0,0.0,1.0);              // Синий
+    glVertex3f(-1.0 + pos_x, 1.0 + pos_y, 1.0 + pos_z);          // Верх право квадрата (Лево)
+    glVertex3f(-1.0 + pos_x, 1.0 + pos_y,-1.0 + pos_z);          // Верх лево
+    glVertex3f(-1.0 + pos_x,-1.0 + pos_y,-1.0 + pos_z);          // Низ лево
+    glVertex3f(-1.0 + pos_x,-1.0 + pos_y, 1.0 + pos_z);          // Низ право
 
-    glColor3f(1.0f,0.0f,1.0f);              // Фиолетовый
-    glVertex3f( 1.0f + pos_x, 1.0f + pos_y,-1.0f + pos_z);          // Верх право квадрата (Право)
-    glVertex3f( 1.0f + pos_x, 1.0f + pos_y, 1.0f + pos_z);          // Верх лево
-    glVertex3f( 1.0f + pos_x,-1.0f + pos_y, 1.0f + pos_z);          // Низ лево
-    glVertex3f( 1.0f + pos_x,-1.0f + pos_y,-1.0f + pos_z);          // Низ право
+    glColor3f(1.0,0.0,1.0);              // Фиолетовый
+    glVertex3f( 1.0 + pos_x, 1.0 + pos_y,-1.0 + pos_z);          // Верх право квадрата (Право)
+    glVertex3f( 1.0 + pos_x, 1.0 + pos_y, 1.0 + pos_z);          // Верх лево
+    glVertex3f( 1.0 + pos_x,-1.0 + pos_y, 1.0 + pos_z);          // Низ лево
+    glVertex3f( 1.0 + pos_x,-1.0 + pos_y,-1.0 + pos_z);          // Низ право
 
 }
 
-void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, char tem, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 0)
+void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, char tem, float c1 = 1.0, float c2 = 1.0, float c3 = 1.0, int ind = 0)
 {
 	if (color)
 	{
@@ -111,7 +123,7 @@ void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, char
         }
 	}
 }
- void drawModel::plain_side (float y1, float z1, float y2, float z2, float x, char tem, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 2)
+void drawModel::plain_side (float y1, float z1, float y2, float z2, float x, char tem, float c1 = 1.0, float c2 = 1.0, float c3 = 1.0, int ind = 2)
 {
 	if (color)
 	{
@@ -148,7 +160,7 @@ void drawModel::plain_top (float x1, float z1, float x2, float z2, float y, char
         }
 	}
 }
-void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, char tem, float c1 = 1.0f, float c2 =1.0f, float c3 = 1.0f, int ind = 4)
+void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, char tem, float c1 = 1.0, float c2 =1.0, float c3 = 1.0, int ind = 4)
 {
 	if (color)
 	{
@@ -191,7 +203,7 @@ void drawModel::plain_front (float x1, float y1, float x2, float y2, float z, ch
         }
 	}
 }
-void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y, char tem, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 1)
+void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, float y, char tem, float c1 = 1.0, float c2 = 1.0, float c3 = 1.0, int ind = 1)
 {
 	if (color)
 	{
@@ -234,11 +246,11 @@ void drawModel::plain_top_reversed (float x1, float z1, float x2, float z2, floa
         }
 	}
 }
-void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x, char tem, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 5)
+void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, float x, char tem, float c1 = 1.0, float c2 = 1.0, float c3 = 1.0, int ind = 5)
 {
 	if (color)
 	{
-        glColor3f(1.0f,1.0f,1.0f);
+        glColor3f(1.0,1.0,1.0);
 		glVertex3f(x, y2, z1);
 		glVertex3f(x, y2, z2);
 	    glVertex3f(x, y1, z2);
@@ -274,7 +286,7 @@ void drawModel::plain_side_reversed (float y1, float z1, float y2, float z2, flo
         glEnd();
 	}
 }
-void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z, char tem, float c1 = 1.0f, float c2 = 1.0f, float c3 = 1.0f, int ind = 3)
+void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, float z, char tem, float c1 = 1.0, float c2 = 1.0, float c3 = 1.0, int ind = 3)
 {
 	if (color)
 	{
@@ -314,3 +326,47 @@ void drawModel::plain_front_reversed (float x1, float y1, float x2, float y2, fl
         glEnd();
 	}
 }
+
+class mob
+{
+private:
+	float Angle;
+	float x, y, z;
+	GLfloat rtr;
+public:
+	mob(int xx, int yy, int zz)
+	{
+		x = xx;
+		y = yy;
+		z = zz;
+		Angle = 0.01;
+		rtr = 0.01;
+	}
+	void Change_ang(float delta)
+	{
+		Angle += delta;
+	}
+	void Change_r(float delt)
+	{
+		rtr += delt;
+	}
+	void draw(char tem)
+	{
+		glRotatef(rtr, 0, 0, Angle);
+		glPushMatrix();
+		drawModel::plain_side(y, z, y+1, z+1, x, tem, 1.0, 0.0, 0.0);
+        drawModel::plain_side_reversed(y, z, y+1, z+1, x+1, tem, 1.0, 0.0, 1.0);
+		drawModel::plain_top_reversed(x, z, x+1, z+1, y, tem, 1.0, 1.0, 0.0);
+		drawModel::plain_top(x, z, x+1, z+1, y+1, tem, 0.0, 1.0, 0.0);
+		drawModel::plain_front(x, y, x+1, y+1, z, tem, 0.0, 1.0, 1.0);
+		drawModel::plain_front_reversed(x, y, x+1, y+1, z+1, tem, 0.0, 0.0, 1.0);
+		glPopMatrix();
+		glRotatef(-rtr, 0, 0, Angle);
+	}
+	void move(float dY)
+	{
+		x += cos(Angle);
+		z += sin(Angle);
+		y += dY;
+	}
+};
