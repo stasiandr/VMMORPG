@@ -66,7 +66,7 @@ unsigned char * datas[num_tex][6];
 unsigned int widths[num_tex][6];
 unsigned int heights[num_tex][6];
 
-void loadBMP_custom(const char * imagepath, int ind, int t)
+void loadBMP_custom(const char * imagepath, GLuint textures[num_tex][6], int ind, int t)
 {
     // Данные, прочитанные из заголовка BMP-файла
     unsigned char header[54]; // Каждый BMP-файл начинается с заголовка, длиной в 54 байта
@@ -157,8 +157,9 @@ bool gravity = false;
 bool color = false;
 
 //#include "raycast.h"
-#include "free_camera.h"
 #include "models.h"
+mob AZAZA(10, 101, 10);
+#include "free_camera.h"
 
 char name[15];
 
@@ -214,7 +215,7 @@ void Update()
                     name[e] = fullpath[e];
                 name[16] = 0;
                 cout << name << endl;
-                loadBMP_custom(name, j, i);
+                loadBMP_custom(name, textures, j, i);
             }
         }
     }
@@ -292,10 +293,6 @@ int main(int argc, char** argv)
     return 0;
 }
 
-
-
-
-
 /*! glut display callback function.  Every time the window needs to be drawn,
  glut will call this function.  This includes when the window size
  changes, or when another window covering part of this window is
@@ -346,6 +343,8 @@ void display(void)
               0.0f, 1.0f,  0.0f);
 
     //---
+
+	AZAZA.draw('3');
 
     tx = x - 0.5f;
     ty = y - 1.5f;
@@ -409,8 +408,6 @@ void display(void)
     for(int b = 0; b < 6; ++b)
        blocker[b] = false;
 
-    glPopMatrix();
-
     glPushMatrix();
 
     glDisable(GL_TEXTURE_2D);
@@ -468,7 +465,6 @@ void chunks(string is)
     }
     //cout << x << y << z << endl;
     glPushMatrix();
-    glRotatef(rtri, 1.0f, 1.0f, 1.0f);
     if (color)
         glBegin(GL_QUADS);
 
@@ -512,34 +508,29 @@ void chunks(string is)
                     //drawModel::cube(xbc, ybc, zbc);
                     if (bad(i-1, j, k))
                         drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, tem, 1.0f, 0.0f, 0.0f);
-                    else if (is[(i-1)*wid*dee + j*dee + k + de] == '0' or is[(i-1)*wid*dee + j*dee + k + de] == ':')
+                    else if (is[(i-1)*wid*dee + j*dee + k + de] == '0' || is[(i-1)*wid*dee + j*dee + k + de] == ':')
                         drawModel::plain_side(ybc, zbc, ybc+1, zbc+1, xbc, tem, 1.0f, 0.0f, 0.0f);
                     if (bad(i+1, j, k))
                         drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, tem, 1.0f, 0.0f, 1.0f);
-                    else if (is[(i+1)*wid*dee + j*dee + k + de] == '0' or is[(i+1)*wid*dee + j*dee + k + de] == ':')
+                    else if (is[(i+1)*wid*dee + j*dee + k + de] == '0' || is[(i+1)*wid*dee + j*dee + k + de] == ':')
                         drawModel::plain_side_reversed(ybc, zbc, ybc+1, zbc+1, xbc+1, tem, 1.0f, 0.0f, 1.0f);
                     if (bad(i, j-1, k))
                         drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, tem, 1.0f, 1.0f, 0.0f);
-                    else if (is[i*wid*dee + (j-1)*dee + k + de] == '0' or is[i*wid*dee + (j-1)*dee + k + de] == ':')
+                    else if (is[i*wid*dee + (j-1)*dee + k + de] == '0' || is[i*wid*dee + (j-1)*dee + k + de] == ':')
                         drawModel::plain_top_reversed(xbc, zbc, xbc+1, zbc+1, ybc, tem, 1.0f, 1.0f, 0.0f);
                     if (bad(i, j+1, k))
                         drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, tem, 0.0f, 1.0f, 0.0f);
-                    else if (is[i*wid*dee + (j+1)*dee + k + de] == '0' or is[i*wid*dee + (j+1)*dee + k + de] == ':')
+                    else if (is[i*wid*dee + (j+1)*dee + k + de] == '0' || is[i*wid*dee + (j+1)*dee + k + de] == ':')
                         drawModel::plain_top(xbc, zbc, xbc+1, zbc+1, ybc+1, tem, 0.0f, 1.0f, 0.0f);
                     if (bad(i, j, k-1))
                         drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, tem, 0.0f, 1.0f, 1.0f);
-                    else if (is[i*wid*dee + j*dee + k-1 + de] == '0' or is[i*wid*dee + j*dee + k-1 + de] == ':')
+                    else if (is[i*wid*dee + j*dee + k-1 + de] == '0' || is[i*wid*dee + j*dee + k-1 + de] == ':')
                         drawModel::plain_front(xbc, ybc, xbc+1, ybc+1, zbc, tem, 0.0f, 1.0f, 1.0f);
                     if (bad(i, j, k+1))
                         drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, tem, 0.0f, 0.0f, 1.0f);
-                    else if (is[i*wid*dee + j*dee + k+1 + de] == '0' or is[i*wid*dee + j*dee + k+1 + de] == ':')
+                    else if (is[i*wid*dee + j*dee + k+1 + de] == '0' || is[i*wid*dee + j*dee + k+1 + de] == ':')
                         drawModel::plain_front_reversed(xbc, ybc, xbc+1, ybc+1, zbc+1, tem, 0.0f, 0.0f, 1.0f);
                     // chunk's borders drawing - END
-                    /*int inde = (i-1)*wid*dee + j*dee + k + de;
-                    cout << i << " " << j << " " << k << " " << de << endl;
-                    cout << inde << endl;
-                    cout << is.size() << endl;
-                    cout << is[inde] << endl;*/
                 }
     if (GL_BLEND_BUFFER_BIT.size() < 1)
     {
@@ -572,6 +563,7 @@ void chunks(string is)
 
     if (color)
         glEnd();
+    glPopMatrix();
 }
 string getchunk(const char *fn)
 {
